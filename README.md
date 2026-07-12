@@ -147,4 +147,4 @@ event-bus listeners. If you add some, uncomment that line and set `eventbus_vers
 
 ## License
 
-MIT — see `mod_license` in `gradle.properties`.
+MIT — declared in `src/main/resources/META-INF/mods.toml`.
