@@ -1,0 +1,98 @@
+{
+  "pistol_fire": {
+    "subtitle": "subtitles.gunmod.gunshot",
+    "sounds": [
+      {
+        "name": "minecraft:item.crossbow.shoot",
+        "volume": 0.5,
+        "pitch": 1.8,
+        "type": "event"
+      },
+      {
+        "name": "minecraft:entity.firework_rocket.blast",
+        "volume": 0.5,
+        "pitch": 2.0,
+        "type": "event"
+      }
+    ]
+  },
+  "smg_fire": {
+    "subtitle": "subtitles.gunmod.gunshot",
+    "sounds": [
+      {
+        "name": "minecraft:item.crossbow.shoot",
+        "volume": 0.4,
+        "pitch": 2.0,
+        "type": "event"
+      },
+      {
+        "name": "minecraft:entity.firework_rocket.blast",
+        "volume": 0.35,
+        "pitch": 2.2,
+        "type": "event"
+      }
+    ]
+  },
+  "rifle_fire": {
+    "subtitle": "subtitles.gunmod.gunshot",
+    "sounds": [
+      {
+        "name": "minecraft:entity.firework_rocket.blast",
+        "volume": 0.6,
+        "pitch": 1.5,
+        "type": "event"
+      },
+      {
+        "name": "minecraft:item.crossbow.shoot",
+        "volume": 0.45,
+        "pitch": 1.4,
+        "type": "event"
+      }
+    ]
+  },
+  "shotgun_fire": {
+    "subtitle": "subtitles.gunmod.gunshot",
+    "sounds": [
+      {
+        "name": "minecraft:entity.generic.explode",
+        "volume": 0.6,
+        "pitch": 1.6,
+        "type": "event"
+      },
+      {
+        "name": "minecraft:entity.firework_rocket.large_blast",
+        "volume": 0.5,
+        "pitch": 1.2,
+        "type": "event"
+      }
+    ]
+  },
+  "sniper_fire": {
+    "subtitle": "subtitles.gunmod.gunshot",
+    "sounds": [
+      {
+        "name": "minecraft:entity.generic.explode",
+        "volume": 0.8,
+        "pitch": 1.2,
+        "type": "event"
+      },
+      {
+        "name": "minecraft:item.crossbow.shoot",
+        "volume": 0.5,
+        "pitch": 0.9,
+        "type": "event"
+      }
+    ]
+  },
+  "dry_fire": {
+    "subtitle": "subtitles.gunmod.dry_fire",
+    "sounds": [
+      {
+        "name": "minecraft:block.dispenser.fail",
+        "volume": 0.7,
+        "pitch": 1.2,
+        "type": "event"
+      }
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "itemGroup.gunmod.guns": "Guns",
+  "item.gunmod.pistol": "Pistol",
+  "item.gunmod.smg": "SMG",
+  "item.gunmod.rifle": "Assault Rifle",
+  "item.gunmod.shotgun": "Shotgun",
+  "item.gunmod.sniper": "Sniper Rifle",
+  "item.gunmod.bullet": "Bullet",
+  "item.gunmod.shell": "Shotgun Shell",
+  "item.gunmod.heavy_round": "Heavy Round",
+  "subtitles.gunmod.gunshot": "Gun fires",
+  "subtitles.gunmod.dry_fire": "Gun clicks"
+}
