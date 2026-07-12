@@ -36,7 +36,14 @@ Built for the profile shown in the launcher:
 - **Feedback** – muzzle flash + smoke, an `end_rod` tracer along the shot, impact particles,
   a dry-fire *click* when you're out of ammo, and layered gunshot sounds (built from vanilla
   sound events, so the mod ships **no audio files**).
-- A dedicated **Guns** creative tab.
+- **5 Tsar-class bombs** with escalating fictional yields — 50 MT up to 1 billion megatons —
+  each with a beeping fuse, a one-time blast that damages every entity in range with distance
+  falloff, an expanding ring **shockwave that erases terrain over several seconds** (a custom
+  multi-tick sweep — the vanilla explosion engine can't handle these radii), and a lingering
+  particle **mushroom cloud**. Up to 4 simultaneous detonations; bedrock and other unbreakable
+  blocks survive.
+- A dedicated **Gun Mod** creative tab.
+- English and Spanish (`es_es`, `es_mx`) translations.
 
 ## How to use
 
@@ -56,6 +63,22 @@ the sniper is deliberate.
 
 *(Damage is in half-hearts. 20 ticks = 1 second.)*
 
+### Bomb stats
+
+Right-click with a bomb to arm it at the block you're aiming at (up to 8 blocks away). The fuse
+beeps faster and faster, then: flash, blast, expanding shockwave, mushroom cloud.
+
+| Bomb                                   | Blast radius | Fuse  | Ground-zero damage |
+| -------------------------------------- | ------------ | ----- | ------------------ |
+| Tsar Bomba (50 Megatons)               | 35 blocks    | 5 s   | 150                |
+| Tsar Bomba II (100,000 Megatons)       | 55 blocks    | 6 s   | 300                |
+| Tsar Bomba III (1 Million Megatons)    | 75 blocks    | 7 s   | 600                |
+| Tsar Bomba IV (100 Million Megatons)   | 100 blocks   | 8 s   | 1,200              |
+| Tsar Bomba V (1 Billion Megatons)      | 130 blocks   | 10 s  | 2,500              |
+
+*(Yields are narrative tiers — the radii are hand-tuned so worlds stay playable and servers
+stay alive. Entity damage falls off linearly out to 1.5× the blast radius.)*
+
 ### Crafting
 
 All recipes use vanilla materials (`I` = iron ingot, `R` = redstone, `S` = stick, `D` = diamond):
@@ -70,6 +93,14 @@ Pistol         SMG            Rifle          Shotgun        Sniper
 - **Bullet** ×2 — gunpowder + iron nugget (shapeless)
 - **Shotgun Shell** ×2 — 2 gunpowder + copper ingot (shapeless)
 - **Heavy Round** ×1 — 2 gunpowder + iron ingot (shapeless)
+
+Bombs escalate — each tier is **8 of the previous tier around an increasingly precious core**:
+
+- **Tsar Bomba** — 8 TNT around an iron block
+- **Tsar Bomba II** — 8 Tsar Bombas around a diamond block
+- **Tsar Bomba III** — 8 Tier-II bombs around a netherite ingot
+- **Tsar Bomba IV** — 8 Tier-III bombs around a nether star
+- **Tsar Bomba V** — 8 Tier-IV bombs around a netherite block
 
 ---
 
@@ -103,10 +134,13 @@ To try it in a dev client:
 build.gradle, settings.gradle, gradle.properties   ForgeGradle 7 build (all versions in gradle.properties)
 src/main/java/com/gmail/doghash01/gunmod/
   GunMod.java        @Mod entry point, creative tab, registration
-  ModItems.java      item registry (3 ammo + 5 guns)
+  ModItems.java      item registry (3 ammo + 5 guns + 5 bombs)
   ModSounds.java     sound-event registry
   GunType.java       per-gun stat record
   GunItem.java       hitscan firing logic (raytrace, damage, particles, cooldown)
+  BombType.java      per-bomb stat record
+  NukeBombItem.java  bomb arming (aim, fuse start, consume)
+  NukeManager.java   server-tick detonation driver (fuse, blast, ring shockwave, cloud)
 src/main/resources/
   META-INF/mods.toml                 mod metadata
   assets/gunmod/items/*.json         client item model definitions (1.21.4+ system)

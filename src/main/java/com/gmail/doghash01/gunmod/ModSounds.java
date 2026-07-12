@@ -20,6 +20,10 @@ public final class ModSounds {
     public static final RegistryObject<SoundEvent> SHOTGUN_FIRE = register("shotgun_fire");
     public static final RegistryObject<SoundEvent> SNIPER_FIRE = register("sniper_fire");
     public static final RegistryObject<SoundEvent> DRY_FIRE = register("dry_fire");
+    public static final RegistryObject<SoundEvent> NUKE_ARM = register("nuke_arm");
+    public static final RegistryObject<SoundEvent> NUKE_BEEP = register("nuke_beep");
+    public static final RegistryObject<SoundEvent> NUKE_BLAST = register("nuke_blast");
+    public static final RegistryObject<SoundEvent> NUKE_RUMBLE = register("nuke_rumble");
 
     private static RegistryObject<SoundEvent> register(String name) {
         // The SoundEvent's own id doubles as the key into sounds.json.

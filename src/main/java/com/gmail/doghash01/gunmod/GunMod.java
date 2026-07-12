@@ -50,6 +50,10 @@ public final class GunMod {
         ModSounds.SOUNDS.register(modBus);
         CREATIVE_TABS.register(modBus);
 
-        LOGGER.info("Gun Mod loaded — {} firearms ready.", ModItems.GUN_COUNT);
+        // Hook the server tick that drives Tsar-bomb detonations.
+        NukeManager.init();
+
+        LOGGER.info("Gun Mod loaded — {} firearms and {} Tsar bombs ready.",
+                ModItems.GUN_COUNT, ModItems.BOMB_COUNT);
     }
 }

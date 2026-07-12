@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "TTT",
+    "TIT",
+    "TTT"
+  ],
+  "key": {
+    "T": "minecraft:tnt",
+    "I": "minecraft:iron_block"
+  },
+  "result": {
+    "id": "gunmod:tsar_bomb",
+    "count": 1
+  }
+}

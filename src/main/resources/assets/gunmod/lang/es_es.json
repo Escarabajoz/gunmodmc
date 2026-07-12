@@ -1,0 +1,23 @@
+{
+  "itemGroup.gunmod.guns": "Gun Mod",
+  "item.gunmod.pistol": "Pistola",
+  "item.gunmod.smg": "Subfusil",
+  "item.gunmod.rifle": "Fusil de asalto",
+  "item.gunmod.shotgun": "Escopeta",
+  "item.gunmod.sniper": "Rifle de francotirador",
+  "item.gunmod.bullet": "Bala",
+  "item.gunmod.shell": "Cartucho de escopeta",
+  "item.gunmod.heavy_round": "Munición pesada",
+  "item.gunmod.tsar_bomb": "Bomba del Zar (50 megatones)",
+  "item.gunmod.tsar_bomb_100k": "Bomba del Zar II (100.000 megatones)",
+  "item.gunmod.tsar_bomb_1m": "Bomba del Zar III (1 millón de megatones)",
+  "item.gunmod.tsar_bomb_100m": "Bomba del Zar IV (100 millones de megatones)",
+  "item.gunmod.tsar_bomb_1g": "Bomba del Zar V (1.000 millones de megatones)",
+  "message.gunmod.too_many_nukes": "¡Demasiadas detonaciones activas!",
+  "subtitles.gunmod.gunshot": "Disparo",
+  "subtitles.gunmod.dry_fire": "Arma sin munición",
+  "subtitles.gunmod.nuke_arm": "Bomba armada",
+  "subtitles.gunmod.nuke_beep": "Pitido de bomba",
+  "subtitles.gunmod.nuke_blast": "Explosión nuclear",
+  "subtitles.gunmod.nuke_rumble": "La tierra retumba"
+}

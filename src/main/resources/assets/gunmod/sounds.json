@@ -94,5 +94,67 @@
         "type": "event"
       }
     ]
+  },
+  "nuke_arm": {
+    "subtitle": "subtitles.gunmod.nuke_arm",
+    "sounds": [
+      {
+        "name": "minecraft:block.beacon.activate",
+        "volume": 1.0,
+        "pitch": 0.8,
+        "type": "event"
+      },
+      {
+        "name": "minecraft:block.note_block.bell",
+        "volume": 1.0,
+        "pitch": 0.6,
+        "type": "event"
+      }
+    ]
+  },
+  "nuke_beep": {
+    "subtitle": "subtitles.gunmod.nuke_beep",
+    "sounds": [
+      {
+        "name": "minecraft:block.note_block.pling",
+        "volume": 1.0,
+        "pitch": 1.5,
+        "type": "event"
+      }
+    ]
+  },
+  "nuke_blast": {
+    "subtitle": "subtitles.gunmod.nuke_blast",
+    "sounds": [
+      {
+        "name": "minecraft:entity.lightning_bolt.thunder",
+        "volume": 1.0,
+        "pitch": 0.5,
+        "type": "event"
+      },
+      {
+        "name": "minecraft:entity.generic.explode",
+        "volume": 1.0,
+        "pitch": 0.5,
+        "type": "event"
+      },
+      {
+        "name": "minecraft:entity.wither.death",
+        "volume": 0.7,
+        "pitch": 0.5,
+        "type": "event"
+      }
+    ]
+  },
+  "nuke_rumble": {
+    "subtitle": "subtitles.gunmod.nuke_rumble",
+    "sounds": [
+      {
+        "name": "minecraft:entity.generic.explode",
+        "volume": 1.0,
+        "pitch": 0.6,
+        "type": "event"
+      }
+    ]
   }
 }

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "BBB",
+    "BDB",
+    "BBB"
+  ],
+  "key": {
+    "B": "gunmod:tsar_bomb",
+    "D": "minecraft:diamond_block"
+  },
+  "result": {
+    "id": "gunmod:tsar_bomb_100k",
+    "count": 1
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "itemGroup.gunmod.guns": "Guns",
+  "itemGroup.gunmod.guns": "Gun Mod",
   "item.gunmod.pistol": "Pistol",
   "item.gunmod.smg": "SMG",
   "item.gunmod.rifle": "Assault Rifle",
@@ -8,6 +8,16 @@
   "item.gunmod.bullet": "Bullet",
   "item.gunmod.shell": "Shotgun Shell",
   "item.gunmod.heavy_round": "Heavy Round",
+  "item.gunmod.tsar_bomb": "Tsar Bomba (50 Megatons)",
+  "item.gunmod.tsar_bomb_100k": "Tsar Bomba II (100,000 Megatons)",
+  "item.gunmod.tsar_bomb_1m": "Tsar Bomba III (1 Million Megatons)",
+  "item.gunmod.tsar_bomb_100m": "Tsar Bomba IV (100 Million Megatons)",
+  "item.gunmod.tsar_bomb_1g": "Tsar Bomba V (1 Billion Megatons)",
+  "message.gunmod.too_many_nukes": "Too many active detonations!",
   "subtitles.gunmod.gunshot": "Gun fires",
-  "subtitles.gunmod.dry_fire": "Gun clicks"
+  "subtitles.gunmod.dry_fire": "Gun clicks",
+  "subtitles.gunmod.nuke_arm": "Bomb armed",
+  "subtitles.gunmod.nuke_beep": "Bomb beeps",
+  "subtitles.gunmod.nuke_blast": "Nuclear explosion",
+  "subtitles.gunmod.nuke_rumble": "Ground rumbles"
 }

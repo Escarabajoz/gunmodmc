@@ -40,12 +40,28 @@ public final class ModItems {
     public static final RegistryObject<Item> SNIPER = gun("sniper", new GunType(
             14.0F, 96.0, 1, 0.25F, 28, 2.0F, 0.50, 1.0F, HEAVY_ROUND::get, ModSounds.SNIPER_FIRE::get));
 
+    // ---- Tsar-class bombs ----
+    // BombType(blastRadius blocks, fuseTicks, maxDamage at ground zero, shockwave ringsPerTick)
+    // Yields are narrative tiers; radii are hand-tuned so the game stays playable.
+    public static final RegistryObject<Item> TSAR_BOMB = bomb("tsar_bomb",
+            new BombType(35, 100, 150.0F, 1));
+    public static final RegistryObject<Item> TSAR_BOMB_100K = bomb("tsar_bomb_100k",
+            new BombType(55, 120, 300.0F, 1));
+    public static final RegistryObject<Item> TSAR_BOMB_1M = bomb("tsar_bomb_1m",
+            new BombType(75, 140, 600.0F, 2));
+    public static final RegistryObject<Item> TSAR_BOMB_100M = bomb("tsar_bomb_100m",
+            new BombType(100, 160, 1200.0F, 2));
+    public static final RegistryObject<Item> TSAR_BOMB_1G = bomb("tsar_bomb_1g",
+            new BombType(130, 200, 2500.0F, 2));
+
     /** Display order for the creative tab. */
     public static final List<RegistryObject<Item>> CREATIVE_ORDER = List.of(
-            PISTOL, SMG, RIFLE, SHOTGUN, SNIPER, BULLET, SHELL, HEAVY_ROUND);
+            PISTOL, SMG, RIFLE, SHOTGUN, SNIPER, BULLET, SHELL, HEAVY_ROUND,
+            TSAR_BOMB, TSAR_BOMB_100K, TSAR_BOMB_1M, TSAR_BOMB_100M, TSAR_BOMB_1G);
 
-    /** Number of firearms, for logging. */
+    /** Counts for the startup log line. */
     public static final int GUN_COUNT = 5;
+    public static final int BOMB_COUNT = 5;
 
     private static RegistryObject<Item> ammo(String name) {
         return ITEMS.register(name, () -> new Item(new Item.Properties().setId(ITEMS.key(name))));
@@ -54,6 +70,11 @@ public final class ModItems {
     private static RegistryObject<Item> gun(String name, GunType type) {
         return ITEMS.register(name, () ->
                 new GunItem(new Item.Properties().setId(ITEMS.key(name)).stacksTo(1), type));
+    }
+
+    private static RegistryObject<Item> bomb(String name, BombType type) {
+        return ITEMS.register(name, () ->
+                new NukeBombItem(new Item.Properties().setId(ITEMS.key(name)).stacksTo(16), type));
     }
 
     private ModItems() {
