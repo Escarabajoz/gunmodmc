@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "gunmod:item/tsar_bomb_mk38"
+  }
+}

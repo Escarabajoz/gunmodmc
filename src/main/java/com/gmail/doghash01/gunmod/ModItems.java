@@ -5,6 +5,7 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -49,42 +50,75 @@ public final class ModItems {
                     new Item.Properties().setId(ITEMS.key("rocket_launcher")).stacksTo(1)));
 
     // ---- Tsar-class bombs ----
-    // BombType(blastRadius, fuseTicks, maxDamage at ground zero, shockwave ringsPerTick, heat 0..1)
+    // BombType.nuke(blastRadius, fuseTicks, maxDamage at ground zero, ringsPerTick, heat 0..1)
     // Yields are narrative tiers; radii are hand-tuned so the game stays playable. Heat drives
     // the melt system: lava/magma crater, sand->glass, ice->water, tree charring and fires.
     public static final RegistryObject<Item> TSAR_BOMB = bomb("tsar_bomb",
-            new BombType(35, 100, 150.0F, 1, 0.40F));
+            BombType.nuke(35, 100, 150.0F, 1, 0.40F));
     public static final RegistryObject<Item> TSAR_BOMB_100K = bomb("tsar_bomb_100k",
-            new BombType(55, 120, 300.0F, 1, 0.55F));
+            BombType.nuke(55, 120, 300.0F, 1, 0.55F));
     public static final RegistryObject<Item> TSAR_BOMB_1M = bomb("tsar_bomb_1m",
-            new BombType(75, 140, 600.0F, 2, 0.70F));
+            BombType.nuke(75, 140, 600.0F, 2, 0.70F));
     public static final RegistryObject<Item> TSAR_BOMB_100M = bomb("tsar_bomb_100m",
-            new BombType(100, 160, 1200.0F, 2, 0.85F));
+            BombType.nuke(100, 160, 1200.0F, 2, 0.85F));
     public static final RegistryObject<Item> TSAR_BOMB_1G = bomb("tsar_bomb_1g",
-            new BombType(130, 200, 2500.0F, 2, 0.95F));
+            BombType.nuke(130, 200, 2500.0F, 2, 0.95F));
     public static final RegistryObject<Item> TSAR_BOMB_1T = bomb("tsar_bomb_1t",
-            new BombType(170, 240, 5000.0F, 3, 1.00F));
+            BombType.nuke(170, 240, 5000.0F, 3, 1.00F));
     public static final RegistryObject<Item> TSAR_BOMB_100T = bomb("tsar_bomb_100t",
-            new BombType(190, 260, 10000.0F, 3, 1.00F));
+            BombType.nuke(190, 260, 10000.0F, 3, 1.00F));
     public static final RegistryObject<Item> TSAR_BOMB_200T = bomb("tsar_bomb_200t",
-            new BombType(210, 280, 20000.0F, 3, 1.00F));
+            BombType.nuke(210, 280, 20000.0F, 3, 1.00F));
     public static final RegistryObject<Item> TSAR_BOMB_400T = bomb("tsar_bomb_400t",
-            new BombType(230, 300, 40000.0F, 3, 1.00F));
+            BombType.nuke(230, 300, 40000.0F, 3, 1.00F));
     // The doomsday tier. Radius 256 spans a half-kilometre crater; the shockwave alone runs
     // for ~3 seconds and the thermal ring for a couple more.
     public static final RegistryObject<Item> TSAR_BOMB_999999T = bomb("tsar_bomb_999999t",
-            new BombType(256, 400, 99999.0F, 4, 1.00F));
+            BombType.nuke(256, 400, 99999.0F, 4, 1.00F));
+
+    /**
+     * Tsar Bomba Mk. 11 through Mk. 50 — forty generated ultra tiers beyond Tier X. Yields climb
+     * one power of ten per mark (10^19 megatons and up); radii creep from 258 to 288 blocks
+     * (the practical ceiling before ticks stall), while damage grows quadratically.
+     */
+    public static final List<RegistryObject<Item>> MK_BOMBS = registerMkBombs();
+
+    /**
+     * The Black Hole Bomb: instead of exploding it collapses, dragging every entity toward the
+     * singularity and silently absorbing a 60-block sphere of terrain.
+     */
+    public static final RegistryObject<Item> BLACK_HOLE_BOMB = bomb("black_hole_bomb",
+            BombType.blackHole(60, 120, 100000.0F));
 
     /** Display order for the creative tab. */
-    public static final List<RegistryObject<Item>> CREATIVE_ORDER = List.of(
-            PISTOL, SMG, RIFLE, SHOTGUN, SNIPER, MINIGUN, ROCKET_LAUNCHER,
-            BULLET, SHELL, HEAVY_ROUND, ROCKET,
-            TSAR_BOMB, TSAR_BOMB_100K, TSAR_BOMB_1M, TSAR_BOMB_100M, TSAR_BOMB_1G, TSAR_BOMB_1T,
-            TSAR_BOMB_100T, TSAR_BOMB_200T, TSAR_BOMB_400T, TSAR_BOMB_999999T);
+    public static final List<RegistryObject<Item>> CREATIVE_ORDER = buildCreativeOrder();
 
     /** Counts for the startup log line. */
     public static final int GUN_COUNT = 7;
-    public static final int BOMB_COUNT = 10;
+    public static final int BOMB_COUNT = 10 + 40 + 1;
+
+    private static List<RegistryObject<Item>> registerMkBombs() {
+        List<RegistryObject<Item>> list = new ArrayList<>();
+        for (int mk = 11; mk <= 50; mk++) {
+            int step = mk - 11;
+            int radius = 258 + 30 * step / 39;
+            int fuse = 300 + step * 5;
+            float damage = 50_000.0F * (mk - 10) * (mk - 10);
+            list.add(bomb("tsar_bomb_mk" + mk, BombType.nuke(radius, fuse, damage, 2, 1.0F)));
+        }
+        return List.copyOf(list);
+    }
+
+    private static List<RegistryObject<Item>> buildCreativeOrder() {
+        List<RegistryObject<Item>> order = new ArrayList<>(List.of(
+                PISTOL, SMG, RIFLE, SHOTGUN, SNIPER, MINIGUN, ROCKET_LAUNCHER,
+                BULLET, SHELL, HEAVY_ROUND, ROCKET,
+                TSAR_BOMB, TSAR_BOMB_100K, TSAR_BOMB_1M, TSAR_BOMB_100M, TSAR_BOMB_1G, TSAR_BOMB_1T,
+                TSAR_BOMB_100T, TSAR_BOMB_200T, TSAR_BOMB_400T, TSAR_BOMB_999999T));
+        order.addAll(MK_BOMBS);
+        order.add(BLACK_HOLE_BOMB);
+        return List.copyOf(order);
+    }
 
     private static RegistryObject<Item> ammo(String name) {
         return ITEMS.register(name, () -> new Item(new Item.Properties().setId(ITEMS.key(name))));

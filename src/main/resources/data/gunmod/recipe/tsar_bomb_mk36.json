@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "BBB",
+    "BSB",
+    "BBB"
+  ],
+  "key": {
+    "B": "gunmod:tsar_bomb_mk35",
+    "S": "minecraft:nether_star"
+  },
+  "result": {
+    "id": "gunmod:tsar_bomb_mk36",
+    "count": 1
+  }
+}

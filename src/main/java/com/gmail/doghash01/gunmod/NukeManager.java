@@ -2,6 +2,7 @@ package com.gmail.doghash01.gunmod;
 
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
@@ -97,14 +98,16 @@ public final class NukeManager {
         private int fuseLeft;
         private int ring;
         private int cloudTicks;
+        private int vortexTick;
 
         Detonation(ServerLevel level, Vec3 center, BombType type) {
             this.level = level;
             this.center = center;
             this.type = type;
             this.fuseLeft = type.fuseTicks();
-            // Bigger bombs leave a longer-lasting mushroom cloud.
-            this.cloudTicks = 100 + type.radius();
+            // Nukes: bigger bombs leave a longer-lasting mushroom cloud.
+            // Black holes: a short collapse phase after everything is absorbed.
+            this.cloudTicks = type.style() == BombType.Style.BLACK_HOLE ? 60 : 100 + type.radius();
         }
 
         /** Advances one tick; returns true when the detonation is completely finished. */
@@ -116,6 +119,9 @@ public final class NukeManager {
                     detonate();
                 }
                 return false;
+            }
+            if (type.style() == BombType.Style.BLACK_HOLE) {
+                return tickBlackHole();
             }
             int scorchEnd = type.radius() + type.scorchWidth();
             if (ring <= scorchEnd) {
@@ -137,9 +143,90 @@ public final class NukeManager {
             return true;
         }
 
+        /**
+         * Black hole phase: every tick the singularity drags entities inward (crushing whatever
+         * reaches it), while the event horizon grows one ring every other tick, silently
+         * swallowing the terrain sphere. Afterwards it collapses in on itself.
+         */
+        private boolean tickBlackHole() {
+            vortexTick++;
+            pullEntities();
+            if (ring <= type.radius()) {
+                if ((vortexTick & 1) == 0) {
+                    destroyRing(ring);
+                    ring++;
+                }
+                vortexEffects();
+                return false;
+            }
+            if (cloudTicks-- > 0) {
+                vortexEffects();
+                return false;
+            }
+            // Final collapse.
+            level.playSound(null, center.x, center.y, center.z,
+                    ModSounds.NUKE_RUMBLE.get(), SoundSource.BLOCKS, 8.0F, 0.5F);
+            level.sendParticles(ColorParticleOption.create(ParticleTypes.FLASH, -1),
+                    center.x, center.y, center.z, 2, 0.5, 0.5, 0.5, 0.0);
+            level.sendParticles(ParticleTypes.EXPLOSION_EMITTER, center.x, center.y, center.z,
+                    4, 1.0, 1.0, 1.0, 0.0);
+            return true;
+        }
+
+        /** Drags everything toward the singularity; whatever reaches the core is crushed. */
+        private void pullEntities() {
+            double pull = type.radius() * 2.5;
+            AABB area = new AABB(center, center).inflate(pull);
+            for (Entity entity : level.getEntities((Entity) null, area,
+                    e -> e.isAlive() && !e.isSpectator())) {
+                Vec3 toCenter = center.subtract(entity.position());
+                double distance = toCenter.length();
+                if (distance > pull || distance < 1.0E-3) {
+                    continue;
+                }
+                Vec3 dir = toCenter.scale(1.0 / distance);
+                double strength = 0.05 + 0.55 * (1.0 - distance / pull);
+                entity.push(dir.x * strength, dir.y * strength + 0.02, dir.z * strength);
+                entity.hurtMarked = true;
+                if (distance < 3.0) {
+                    entity.hurtServer(level, level.damageSources().explosion(null, null),
+                            type.maxDamage() / 20.0F);
+                }
+            }
+        }
+
+        /** Swirling portal vortex plus an ink-dark event horizon. */
+        private void vortexEffects() {
+            RandomSource random = level.getRandom();
+            double horizon = Math.min(ring, type.radius());
+            for (int i = 0; i < 10; i++) {
+                double angle = random.nextDouble() * Math.PI * 2;
+                double dist = horizon * (0.4 + random.nextDouble() * 1.2);
+                level.sendParticles(ParticleTypes.PORTAL,
+                        center.x + Math.cos(angle) * dist,
+                        center.y + (random.nextDouble() - 0.5) * horizon,
+                        center.z + Math.sin(angle) * dist,
+                        3, 0.3, 0.3, 0.3, 0.05);
+            }
+            level.sendParticles(ParticleTypes.REVERSE_PORTAL, center.x, center.y, center.z,
+                    8, 1.5, 1.5, 1.5, 0.02);
+            level.sendParticles(ParticleTypes.SQUID_INK, center.x, center.y, center.z,
+                    4, horizon * 0.3, horizon * 0.3, horizon * 0.3, 0.01);
+            if (vortexTick % 40 == 1) {
+                level.playSound(null, center.x, center.y, center.z,
+                        ModSounds.BLACK_HOLE.get(), SoundSource.BLOCKS, 6.0F,
+                        0.5F + random.nextFloat() * 0.2F);
+            }
+        }
+
         private void fuseEffects() {
-            level.sendParticles(ParticleTypes.SMOKE, center.x, center.y + 0.4, center.z, 3, 0.15, 0.3, 0.15, 0.01);
-            level.sendParticles(ParticleTypes.FLAME, center.x, center.y + 0.3, center.z, 1, 0.1, 0.1, 0.1, 0.004);
+            if (type.style() == BombType.Style.BLACK_HOLE) {
+                level.sendParticles(ParticleTypes.PORTAL, center.x, center.y + 0.5, center.z,
+                        6, 0.3, 0.3, 0.3, 0.05);
+            } else {
+                level.sendParticles(ParticleTypes.SMOKE, center.x, center.y + 0.4, center.z, 3, 0.15, 0.3, 0.15, 0.01);
+                level.sendParticles(ParticleTypes.FLAME, center.x, center.y + 0.3, center.z, 1, 0.1, 0.1, 0.1, 0.004);
+            }
             if (fuseLeft % 20 == 0) {
                 // Beeps rise in pitch as the countdown runs out.
                 float progress = 1.0F - (float) fuseLeft / type.fuseTicks();
@@ -149,9 +236,21 @@ public final class NukeManager {
         }
 
         private void detonate() {
+            if (type.style() == BombType.Style.BLACK_HOLE) {
+                // Collapse inward: dark burst, no blast wave, no fire.
+                level.playSound(null, center.x, center.y, center.z,
+                        ModSounds.BLACK_HOLE.get(), SoundSource.BLOCKS, 10.0F, 0.4F);
+                level.sendParticles(ParticleTypes.SQUID_INK, center.x, center.y + 1, center.z,
+                        40, 2.0, 2.0, 2.0, 0.1);
+                level.sendParticles(ParticleTypes.REVERSE_PORTAL, center.x, center.y + 1, center.z,
+                        60, 3.0, 3.0, 3.0, 0.2);
+                return;
+            }
             level.playSound(null, center.x, center.y, center.z,
                     ModSounds.NUKE_BLAST.get(), SoundSource.BLOCKS, 16.0F, 0.7F);
-            level.sendParticles(ParticleTypes.FLASH, center.x, center.y + 1, center.z, 3, 1.0, 1.0, 1.0, 0.0);
+            // FLASH takes a ColorParticleOption in this Minecraft generation; -1 = opaque white.
+            level.sendParticles(ColorParticleOption.create(ParticleTypes.FLASH, -1),
+                    center.x, center.y + 1, center.z, 3, 1.0, 1.0, 1.0, 0.0);
             level.sendParticles(ParticleTypes.EXPLOSION_EMITTER, center.x, center.y + 1, center.z,
                     12, 3.0, 2.0, 3.0, 0.0);
             damageEntities();

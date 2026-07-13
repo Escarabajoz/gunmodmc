@@ -41,7 +41,9 @@ Built for the profile shown in the launcher:
 - **Feedback** – muzzle flash + smoke, an `end_rod` tracer along the shot, impact particles,
   a dry-fire *click* when you're out of ammo, and layered gunshot sounds (built from vanilla
   sound events, so the mod ships **no audio files**).
-- **10 Tsar-class bombs** with escalating fictional yields — 50 MT up to **999,999 trillion megatons** —
+- **51 bombs**: 10 named Tsar tiers (50 MT up to **999,999 trillion megatons**), forty generated
+  ultra tiers (**Tsar Bomba Mk. 11–50**, yields climbing one power of ten per mark up to
+  10^58 megatons), and a **Black Hole Bomb** —
   each with a beeping fuse, a one-time blast that damages every entity in range with distance
   falloff, an expanding ring **shockwave that erases terrain over several seconds** (a custom
   multi-tick sweep — the vanilla explosion engine can't handle these radii), and a lingering
@@ -98,9 +100,20 @@ beeps faster and faster, then: flash, blast, expanding shockwave, mushroom cloud
 | Tsar Bomba IX (400 Trillion Megatons)  | 230 blocks   | 15 s  | 40,000             | 100% |
 | Tsar Bomba X (999,999 Trillion Megatons)| 256 blocks  | 20 s  | 99,999             | 100% |
 
-> ⚠️ The mega tiers (VII–X) carve craters hundreds of blocks wide and will force-load ~1,000
-> chunks while the shockwave runs — expect a few seconds of heavy lifting from the server on
-> Tier X. That's the price of the apocalypse.
+**Tsar Bomba Mk. 11–50** continue past Tier X: yields of 10^19 up to 10^58 megatons, radii
+creeping from 258 to 288 blocks (the practical ceiling before server ticks stall), damage
+growing quadratically to 80 million at Mk. 50, and full heat on every one. Each mark is
+crafted from 8 of the previous mark around a nether star.
+
+**Black Hole Bomb** — doesn't explode; it *collapses*. After the fuse, a singularity forms
+that drags every entity within 150 blocks toward it (crushing whatever reaches the core),
+while the event horizon grows and silently absorbs a 60-block sphere of terrain — no fire,
+no debris, just a perfect void with a swirling portal vortex. Crafted from obsidian, ender
+eyes and a nether star.
+
+> ⚠️ The mega tiers (VII and up) carve craters hundreds of blocks wide and will force-load
+> ~1,000 chunks while the shockwave runs — expect a few seconds of heavy lifting from the
+> server. That's the price of the apocalypse.
 
 *(Yields are narrative tiers — the radii are hand-tuned so worlds stay playable and servers
 stay alive. Entity damage falls off linearly out to 1.5× the blast radius; the heat rating

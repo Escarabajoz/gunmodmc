@@ -23,7 +23,7 @@ import net.minecraft.world.phys.Vec3;
 public class RocketLauncherItem extends Item {
 
     /** Small blast: radius 5, near-instant fuse, hot enough to start fires. */
-    private static final BombType ROCKET_BLAST = new BombType(5, 2, 40.0F, 6, 0.25F);
+    private static final BombType ROCKET_BLAST = BombType.nuke(5, 2, 40.0F, 6, 0.25F);
     private static final int FIRE_DELAY_TICKS = 40;
     private static final double RANGE = 64.0;
 
@@ -41,7 +41,7 @@ public class RocketLauncherItem extends Item {
         boolean creative = player.getAbilities().instabuild;
         ItemStack rockets = creative ? ItemStack.EMPTY : findRockets(player);
         if (!creative && rockets.isEmpty()) {
-            if (!level.isClientSide) {
+            if (!level.isClientSide()) {
                 level.playSound(null, player.getX(), player.getEyeY(), player.getZ(),
                         ModSounds.DRY_FIRE.get(), SoundSource.PLAYERS, 0.7F, 1.0F);
             }

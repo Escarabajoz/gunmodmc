@@ -60,7 +60,7 @@ public class GunItem extends Item {
 
         // Out of ammo: dry-fire click and a short cooldown.
         if (!creative && ammo.isEmpty()) {
-            if (!level.isClientSide) {
+            if (!level.isClientSide()) {
                 level.playSound(null, player.getX(), player.getEyeY(), player.getZ(),
                         ModSounds.DRY_FIRE.get(), SoundSource.PLAYERS, 0.7F, 1.0F);
             }

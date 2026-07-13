@@ -184,5 +184,22 @@
         "type": "event"
       }
     ]
+  },
+  "black_hole": {
+    "subtitle": "subtitles.gunmod.black_hole",
+    "sounds": [
+      {
+        "name": "minecraft:block.portal.ambient",
+        "volume": 1.0,
+        "pitch": 0.5,
+        "type": "event"
+      },
+      {
+        "name": "minecraft:entity.enderman.teleport",
+        "volume": 0.6,
+        "pitch": 0.4,
+        "type": "event"
+      }
+    ]
   }
 }
