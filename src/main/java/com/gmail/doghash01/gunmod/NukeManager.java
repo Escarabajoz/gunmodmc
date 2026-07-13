@@ -8,7 +8,10 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -19,6 +22,7 @@ import org.slf4j.Logger;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Drives Tsar-bomb (and rocket) detonations across server ticks.
@@ -39,8 +43,14 @@ public final class NukeManager {
     private static final Logger LOGGER = LogUtils.getLogger();
     /** Concurrent-detonation cap; protects the server from bomb spam. Rockets share this pool. */
     private static final int MAX_ACTIVE = 8;
+    /** Caps for lingering fallout zones and remotely-planted bombs. */
+    private static final int MAX_FALLOUT = 16;
+    private static final int MAX_PLANTED = 16;
     private static final List<Detonation> ACTIVE = new ArrayList<>();
+    private static final List<Fallout> FALLOUT = new ArrayList<>();
+    private static final List<PlantedBomb> PLANTED = new ArrayList<>();
     private static boolean initialized;
+    private static int clock;
 
     private NukeManager() {
     }
@@ -63,23 +73,156 @@ public final class NukeManager {
         return true;
     }
 
+    /** Plants a bomb for later remote detonation. Returns false when the planted cap is hit. */
+    static boolean plant(ServerLevel level, Vec3 pos, BombType type, UUID owner) {
+        if (PLANTED.size() >= MAX_PLANTED) {
+            return false;
+        }
+        PLANTED.add(new PlantedBomb(level, pos, type, owner));
+        return true;
+    }
+
+    /** Number of bombs this player currently has planted. */
+    static int plantedCount(UUID owner) {
+        int count = 0;
+        for (PlantedBomb planted : PLANTED) {
+            if (planted.owner().equals(owner)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    /**
+     * Starts the fuse of every bomb this player has planted, as far as the active-detonation cap
+     * allows (the rest stay planted). Returns how many were set off.
+     */
+    static int detonatePlanted(UUID owner) {
+        int fired = 0;
+        Iterator<PlantedBomb> iterator = PLANTED.iterator();
+        while (iterator.hasNext()) {
+            PlantedBomb planted = iterator.next();
+            if (!planted.owner().equals(owner)) {
+                continue;
+            }
+            if (ACTIVE.size() >= MAX_ACTIVE) {
+                break;
+            }
+            ACTIVE.add(new Detonation(planted.level(), planted.pos(), planted.type()));
+            iterator.remove();
+            fired++;
+        }
+        return fired;
+    }
+
     private static void onServerTick(TickEvent.ServerTickEvent.Post event) {
-        if (ACTIVE.isEmpty()) {
+        clock++;
+
+        // Blink markers on planted bombs so they can be found again.
+        if (clock % 20 == 0) {
+            for (PlantedBomb planted : PLANTED) {
+                Vec3 pos = planted.pos();
+                planted.level().sendParticles(ParticleTypes.FLAME, pos.x, pos.y + 0.4, pos.z,
+                        1, 0.05, 0.05, 0.05, 0.0);
+                planted.level().sendParticles(ParticleTypes.SMOKE, pos.x, pos.y + 0.5, pos.z,
+                        2, 0.1, 0.1, 0.1, 0.005);
+            }
+        }
+
+        if (!ACTIVE.isEmpty()) {
+            Iterator<Detonation> iterator = ACTIVE.iterator();
+            while (iterator.hasNext()) {
+                Detonation detonation = iterator.next();
+                boolean finished;
+                try {
+                    finished = detonation.tick();
+                } catch (Exception e) {
+                    LOGGER.error("Tsar bomb detonation failed; aborting it", e);
+                    finished = true;
+                }
+                if (finished) {
+                    iterator.remove();
+                    maybeStartFallout(detonation);
+                }
+            }
+        }
+
+        if (!FALLOUT.isEmpty()) {
+            Iterator<Fallout> iterator = FALLOUT.iterator();
+            while (iterator.hasNext()) {
+                Fallout fallout = iterator.next();
+                boolean finished;
+                try {
+                    finished = fallout.tick();
+                } catch (Exception e) {
+                    LOGGER.error("Fallout zone failed; clearing it", e);
+                    finished = true;
+                }
+                if (finished) {
+                    iterator.remove();
+                }
+            }
+        }
+    }
+
+    /** Hot nukes leave a radioactive zone over the crater for several minutes. */
+    private static void maybeStartFallout(Detonation detonation) {
+        BombType type = detonation.type;
+        if (type.style() != BombType.Style.NUKE || type.heat() < 0.5F || FALLOUT.size() >= MAX_FALLOUT) {
             return;
         }
-        Iterator<Detonation> iterator = ACTIVE.iterator();
-        while (iterator.hasNext()) {
-            Detonation detonation = iterator.next();
-            boolean finished;
-            try {
-                finished = detonation.tick();
-            } catch (Exception e) {
-                LOGGER.error("Tsar bomb detonation failed; aborting it", e);
-                finished = true;
+        int radius = (int) (type.radius() * 1.1);
+        int duration = 2400 + type.radius() * 10;
+        FALLOUT.add(new Fallout(detonation.level, detonation.center, radius, duration, type.heat()));
+    }
+
+    /** A bomb placed with sneak + right-click, waiting for the remote detonator. */
+    private record PlantedBomb(ServerLevel level, Vec3 pos, BombType type, UUID owner) {
+    }
+
+    /**
+     * A lingering radioactive zone over a fresh crater: drifting ash, and every living thing
+     * inside is poisoned (withered, for the hottest bombs) until the radiation decays.
+     */
+    private static final class Fallout {
+
+        private final ServerLevel level;
+        private final Vec3 center;
+        private final int radius;
+        private final float heat;
+        private int ticksLeft;
+
+        Fallout(ServerLevel level, Vec3 center, int radius, int duration, float heat) {
+            this.level = level;
+            this.center = center;
+            this.radius = radius;
+            this.heat = heat;
+            this.ticksLeft = duration;
+        }
+
+        boolean tick() {
+            ticksLeft--;
+            RandomSource random = level.getRandom();
+            // Drifting radioactive ash.
+            for (int i = 0; i < 6; i++) {
+                double angle = random.nextDouble() * Math.PI * 2;
+                double dist = Math.sqrt(random.nextDouble()) * radius;
+                level.sendParticles(ParticleTypes.ASH,
+                        center.x + Math.cos(angle) * dist,
+                        center.y + random.nextDouble() * 30.0 - 5.0,
+                        center.z + Math.sin(angle) * dist,
+                        2, 2.0, 4.0, 2.0, 0.01);
             }
-            if (finished) {
-                iterator.remove();
+            // Irradiate everything alive inside the zone once a second.
+            if (ticksLeft % 20 == 0) {
+                AABB area = new AABB(center, center).inflate(radius, 48.0, radius);
+                for (Entity entity : level.getEntities((Entity) null, area,
+                        e -> e instanceof LivingEntity && e.isAlive() && !e.isSpectator())) {
+                    ((LivingEntity) entity).addEffect(new MobEffectInstance(
+                            heat >= 0.9F ? MobEffects.WITHER : MobEffects.POISON, 140, 1));
+                }
             }
+            return ticksLeft <= 0;
         }
     }
 

@@ -105,11 +105,31 @@ creeping from 258 to 288 blocks (the practical ceiling before server ticks stall
 growing quadratically to 80 million at Mk. 50, and full heat on every one. Each mark is
 crafted from 8 of the previous mark around a nether star.
 
-**Black Hole Bomb** — doesn't explode; it *collapses*. After the fuse, a singularity forms
-that drags every entity within 150 blocks toward it (crushing whatever reaches the core),
-while the event horizon grows and silently absorbs a 60-block sphere of terrain — no fire,
-no debris, just a perfect void with a swirling portal vortex. Crafted from obsidian, ender
-eyes and a nether star.
+**Black Hole Bombs** — they don't explode; they *collapse*. After the fuse, a singularity
+forms that drags every entity within 2.5× the radius toward it (crushing whatever reaches the
+core), while the event horizon grows and silently absorbs a sphere of terrain — no fire, no
+debris, just a perfect void with a swirling portal vortex. Four sizes:
+
+| Black hole        | Absorption radius | Pull radius | Core damage/s |
+| ----------------- | ----------------- | ----------- | ------------- |
+| Black Hole Bomb   | 60 blocks         | 150         | 100,000       |
+| Supermassive      | 120 blocks        | 300         | 200,000       |
+| Galactic          | 180 blocks        | 450         | 500,000       |
+| Ultramassive      | 250 blocks*       | 625         | 1,000,000     |
+
+*\*The Ultramassive one's label says radius 1,000,000,050 — that's its narrative ego; 250
+blocks is the practical in-game ceiling.* The base bomb is crafted from obsidian, ender eyes
+and a nether star; each larger size is 8 of the previous around a nether star, beacon, and
+heavy core respectively.
+
+**Radioactive fallout** — hot nukes (heat ≥ 50%) leave a lingering radiation zone over the
+crater for minutes (2 min + 10 ticks per radius block): drifting ash, and every living thing
+inside is **poisoned** — or **withered**, for bombs at heat ≥ 90%. Wait it out or keep your
+distance.
+
+**Remote Detonator** — **sneak + right-click** with any bomb *plants* it silently (a faint
+flame marks the spot, up to 16 planted at once). Right-click the detonator from anywhere to
+trigger every bomb you planted at once. Crafted from iron, redstone and a redstone torch.
 
 > ⚠️ The mega tiers (VII and up) carve craters hundreds of blocks wide and will force-load
 > ~1,000 chunks while the shockwave runs — expect a few seconds of heavy lifting from the

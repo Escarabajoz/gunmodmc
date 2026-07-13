@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "BBB",
+    "BSB",
+    "BBB"
+  ],
+  "key": {
+    "B": "gunmod:black_hole_bomb",
+    "S": "minecraft:nether_star"
+  },
+  "result": {
+    "id": "gunmod:black_hole_supermassive",
+    "count": 1
+  }
+}

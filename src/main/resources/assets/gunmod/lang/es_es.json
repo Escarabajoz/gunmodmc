@@ -72,5 +72,13 @@
   "item.gunmod.tsar_bomb_mk49": "Bomba del Zar Mk. 49 (10^57 megatones)",
   "item.gunmod.tsar_bomb_mk50": "Bomba del Zar Mk. 50 (10^58 megatones)",
   "item.gunmod.black_hole_bomb": "Bomba de Agujero Negro",
-  "subtitles.gunmod.black_hole": "El agujero negro zumba"
+  "subtitles.gunmod.black_hole": "El agujero negro zumba",
+  "item.gunmod.black_hole_supermassive": "Bomba de Agujero Negro Supermasivo",
+  "item.gunmod.black_hole_galactic": "Bomba de Agujero Negro Galáctico",
+  "item.gunmod.black_hole_ultramassive": "Bomba de Agujero Negro Ultramasivo (radio 1.000.000.050)",
+  "item.gunmod.detonator": "Detonador Remoto",
+  "message.gunmod.bomb_planted": "Bomba plantada (%s armadas)",
+  "message.gunmod.too_many_planted": "¡Demasiadas bombas plantadas!",
+  "message.gunmod.detonated": "¡%s bomba(s) detonada(s)!",
+  "message.gunmod.no_planted": "No hay bombas plantadas"
 }

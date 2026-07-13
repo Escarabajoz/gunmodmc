@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "BBB",
+    "BHB",
+    "BBB"
+  ],
+  "key": {
+    "B": "gunmod:black_hole_galactic",
+    "H": "minecraft:heavy_core"
+  },
+  "result": {
+    "id": "gunmod:black_hole_ultramassive",
+    "count": 1
+  }
+}

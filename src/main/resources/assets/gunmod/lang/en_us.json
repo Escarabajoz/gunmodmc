@@ -72,5 +72,13 @@
   "item.gunmod.tsar_bomb_mk49": "Tsar Bomba Mk. 49 (10^57 Megatons)",
   "item.gunmod.tsar_bomb_mk50": "Tsar Bomba Mk. 50 (10^58 Megatons)",
   "item.gunmod.black_hole_bomb": "Black Hole Bomb",
-  "subtitles.gunmod.black_hole": "Black hole hums"
+  "subtitles.gunmod.black_hole": "Black hole hums",
+  "item.gunmod.black_hole_supermassive": "Supermassive Black Hole Bomb",
+  "item.gunmod.black_hole_galactic": "Galactic Black Hole Bomb",
+  "item.gunmod.black_hole_ultramassive": "Ultramassive Black Hole Bomb (radius 1,000,000,050)",
+  "item.gunmod.detonator": "Remote Detonator",
+  "message.gunmod.bomb_planted": "Bomb planted (%s armed)",
+  "message.gunmod.too_many_planted": "Too many planted bombs!",
+  "message.gunmod.detonated": "%s bomb(s) detonated!",
+  "message.gunmod.no_planted": "No planted bombs"
 }

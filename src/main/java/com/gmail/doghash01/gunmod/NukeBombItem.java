@@ -19,6 +19,9 @@ import net.minecraft.world.phys.Vec3;
  * or in front of you if aiming at air). A beeping fuse counts down, then {@link NukeManager}
  * runs the blast: one-time entity damage with falloff, an expanding terrain shockwave, and a
  * mushroom cloud. The item is consumed on arming (except in creative mode).
+ *
+ * <p><b>Sneak + right-click</b> instead <i>plants</i> the bomb silently — no fuse — for later
+ * remote triggering with the {@link DetonatorItem}.</p>
  */
 public class NukeBombItem extends Item {
 
@@ -47,13 +50,24 @@ public class NukeBombItem extends Item {
                     new ClipContext(eye, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, player));
             Vec3 target = hit.getType() != HitResult.Type.MISS ? hit.getLocation() : end;
 
-            if (!NukeManager.start(server, target, type)) {
-                player.sendOverlayMessage(Component.translatable("message.gunmod.too_many_nukes"));
-                return InteractionResult.FAIL;
+            if (player.isShiftKeyDown()) {
+                // Plant silently for the remote detonator.
+                if (!NukeManager.plant(server, target, type, player.getUUID())) {
+                    player.sendOverlayMessage(Component.translatable("message.gunmod.too_many_planted"));
+                    return InteractionResult.FAIL;
+                }
+                server.playSound(null, target.x, target.y, target.z,
+                        ModSounds.NUKE_BEEP.get(), SoundSource.BLOCKS, 1.5F, 0.6F);
+                player.sendOverlayMessage(Component.translatable("message.gunmod.bomb_planted",
+                        NukeManager.plantedCount(player.getUUID())));
+            } else {
+                if (!NukeManager.start(server, target, type)) {
+                    player.sendOverlayMessage(Component.translatable("message.gunmod.too_many_nukes"));
+                    return InteractionResult.FAIL;
+                }
+                server.playSound(null, target.x, target.y, target.z,
+                        ModSounds.NUKE_ARM.get(), SoundSource.BLOCKS, 4.0F, 1.0F);
             }
-
-            server.playSound(null, target.x, target.y, target.z,
-                    ModSounds.NUKE_ARM.get(), SoundSource.BLOCKS, 4.0F, 1.0F);
 
             player.getCooldowns().addCooldown(stack, 20);
             if (!player.getAbilities().instabuild) {

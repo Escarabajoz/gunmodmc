@@ -84,18 +84,29 @@ public final class ModItems {
     public static final List<RegistryObject<Item>> MK_BOMBS = registerMkBombs();
 
     /**
-     * The Black Hole Bomb: instead of exploding it collapses, dragging every entity toward the
-     * singularity and silently absorbing a 60-block sphere of terrain.
+     * Black hole bombs: instead of exploding they collapse, dragging every entity toward the
+     * singularity and silently absorbing a sphere of terrain. Four sizes — the "radius" on the
+     * ultramassive one's label is narrative; 250 blocks is the practical in-game ceiling.
      */
     public static final RegistryObject<Item> BLACK_HOLE_BOMB = bomb("black_hole_bomb",
             BombType.blackHole(60, 120, 100000.0F));
+    public static final RegistryObject<Item> BLACK_HOLE_SUPERMASSIVE = bomb("black_hole_supermassive",
+            BombType.blackHole(120, 160, 200000.0F));
+    public static final RegistryObject<Item> BLACK_HOLE_GALACTIC = bomb("black_hole_galactic",
+            BombType.blackHole(180, 200, 500000.0F));
+    public static final RegistryObject<Item> BLACK_HOLE_ULTRAMASSIVE = bomb("black_hole_ultramassive",
+            BombType.blackHole(250, 240, 1000000.0F));
+
+    /** The remote detonator: triggers every bomb planted with sneak + right-click. */
+    public static final RegistryObject<Item> DETONATOR = ITEMS.register("detonator",
+            () -> new DetonatorItem(new Item.Properties().setId(ITEMS.key("detonator")).stacksTo(1)));
 
     /** Display order for the creative tab. */
     public static final List<RegistryObject<Item>> CREATIVE_ORDER = buildCreativeOrder();
 
     /** Counts for the startup log line. */
     public static final int GUN_COUNT = 7;
-    public static final int BOMB_COUNT = 10 + 40 + 1;
+    public static final int BOMB_COUNT = 10 + 40 + 4;
 
     private static List<RegistryObject<Item>> registerMkBombs() {
         List<RegistryObject<Item>> list = new ArrayList<>();
@@ -112,11 +123,14 @@ public final class ModItems {
     private static List<RegistryObject<Item>> buildCreativeOrder() {
         List<RegistryObject<Item>> order = new ArrayList<>(List.of(
                 PISTOL, SMG, RIFLE, SHOTGUN, SNIPER, MINIGUN, ROCKET_LAUNCHER,
-                BULLET, SHELL, HEAVY_ROUND, ROCKET,
+                BULLET, SHELL, HEAVY_ROUND, ROCKET, DETONATOR,
                 TSAR_BOMB, TSAR_BOMB_100K, TSAR_BOMB_1M, TSAR_BOMB_100M, TSAR_BOMB_1G, TSAR_BOMB_1T,
                 TSAR_BOMB_100T, TSAR_BOMB_200T, TSAR_BOMB_400T, TSAR_BOMB_999999T));
         order.addAll(MK_BOMBS);
         order.add(BLACK_HOLE_BOMB);
+        order.add(BLACK_HOLE_SUPERMASSIVE);
+        order.add(BLACK_HOLE_GALACTIC);
+        order.add(BLACK_HOLE_ULTRAMASSIVE);
         return List.copyOf(order);
     }
 
