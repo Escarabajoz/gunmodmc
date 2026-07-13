@@ -1,0 +1,39 @@
+# Gun Mod — mod metadata for Forge 26.2 (Forge 65.x).
+# Reference: https://docs.minecraftforge.net/en/1.21.x/gettingstarted/modfiles/#modstoml
+
+modLoader="javafml"
+# The loader/Forge version this mod requires. Matches loader_version_range in gradle.properties.
+loaderVersion="[65,)"
+license="MIT"
+issueTrackerURL="https://github.com/escarabajoz/gunmodmc/issues"
+
+[[mods]]
+modId="gunmod"
+version="1.0.0"
+displayName="Gun Mod"
+authors="doghash01"
+logoFile="gunmod_logo.png"
+displayTest="MATCH_VERSION"
+description='''
+Adds a family of hitscan firearms to Minecraft: a pistol, SMG, assault rifle,
+shotgun and sniper rifle, each with its own ammo, fire rate, range, bullet
+spread and recoil feel. Guns raycast to their target for instant hits, reward
+headshots with bonus damage, kick enemies back, and leave muzzle flashes and
+tracer trails. Ammo is crafted from gunpowder and metal.
+'''
+
+# Depend on Forge itself.
+[[dependencies.gunmod]]
+    modId="forge"
+    mandatory=true
+    versionRange="[65,)"
+    ordering="NONE"
+    side="BOTH"
+
+# Depend on a compatible Minecraft version.
+[[dependencies.gunmod]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[26.2,27)"
+    ordering="NONE"
+    side="BOTH"

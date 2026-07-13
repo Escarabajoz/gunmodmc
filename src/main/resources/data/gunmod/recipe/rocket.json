@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:tnt",
+    "minecraft:gunpowder",
+    "minecraft:iron_ingot"
+  ],
+  "result": {
+    "id": "gunmod:rocket",
+    "count": 2
+  }
+}

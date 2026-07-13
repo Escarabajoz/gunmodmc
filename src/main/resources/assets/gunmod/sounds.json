@@ -1,0 +1,205 @@
+{
+  "pistol_fire": {
+    "subtitle": "subtitles.gunmod.gunshot",
+    "sounds": [
+      {
+        "name": "minecraft:item.crossbow.shoot",
+        "volume": 0.5,
+        "pitch": 1.8,
+        "type": "event"
+      },
+      {
+        "name": "minecraft:entity.firework_rocket.blast",
+        "volume": 0.5,
+        "pitch": 2.0,
+        "type": "event"
+      }
+    ]
+  },
+  "smg_fire": {
+    "subtitle": "subtitles.gunmod.gunshot",
+    "sounds": [
+      {
+        "name": "minecraft:item.crossbow.shoot",
+        "volume": 0.4,
+        "pitch": 2.0,
+        "type": "event"
+      },
+      {
+        "name": "minecraft:entity.firework_rocket.blast",
+        "volume": 0.35,
+        "pitch": 2.2,
+        "type": "event"
+      }
+    ]
+  },
+  "rifle_fire": {
+    "subtitle": "subtitles.gunmod.gunshot",
+    "sounds": [
+      {
+        "name": "minecraft:entity.firework_rocket.blast",
+        "volume": 0.6,
+        "pitch": 1.5,
+        "type": "event"
+      },
+      {
+        "name": "minecraft:item.crossbow.shoot",
+        "volume": 0.45,
+        "pitch": 1.4,
+        "type": "event"
+      }
+    ]
+  },
+  "shotgun_fire": {
+    "subtitle": "subtitles.gunmod.gunshot",
+    "sounds": [
+      {
+        "name": "minecraft:entity.generic.explode",
+        "volume": 0.6,
+        "pitch": 1.6,
+        "type": "event"
+      },
+      {
+        "name": "minecraft:entity.firework_rocket.large_blast",
+        "volume": 0.5,
+        "pitch": 1.2,
+        "type": "event"
+      }
+    ]
+  },
+  "sniper_fire": {
+    "subtitle": "subtitles.gunmod.gunshot",
+    "sounds": [
+      {
+        "name": "minecraft:entity.generic.explode",
+        "volume": 0.8,
+        "pitch": 1.2,
+        "type": "event"
+      },
+      {
+        "name": "minecraft:item.crossbow.shoot",
+        "volume": 0.5,
+        "pitch": 0.9,
+        "type": "event"
+      }
+    ]
+  },
+  "dry_fire": {
+    "subtitle": "subtitles.gunmod.dry_fire",
+    "sounds": [
+      {
+        "name": "minecraft:block.dispenser.fail",
+        "volume": 0.7,
+        "pitch": 1.2,
+        "type": "event"
+      }
+    ]
+  },
+  "nuke_arm": {
+    "subtitle": "subtitles.gunmod.nuke_arm",
+    "sounds": [
+      {
+        "name": "minecraft:block.beacon.activate",
+        "volume": 1.0,
+        "pitch": 0.8,
+        "type": "event"
+      },
+      {
+        "name": "minecraft:block.note_block.bell",
+        "volume": 1.0,
+        "pitch": 0.6,
+        "type": "event"
+      }
+    ]
+  },
+  "nuke_beep": {
+    "subtitle": "subtitles.gunmod.nuke_beep",
+    "sounds": [
+      {
+        "name": "minecraft:block.note_block.pling",
+        "volume": 1.0,
+        "pitch": 1.5,
+        "type": "event"
+      }
+    ]
+  },
+  "nuke_blast": {
+    "subtitle": "subtitles.gunmod.nuke_blast",
+    "sounds": [
+      {
+        "name": "minecraft:entity.lightning_bolt.thunder",
+        "volume": 1.0,
+        "pitch": 0.5,
+        "type": "event"
+      },
+      {
+        "name": "minecraft:entity.generic.explode",
+        "volume": 1.0,
+        "pitch": 0.5,
+        "type": "event"
+      },
+      {
+        "name": "minecraft:entity.wither.death",
+        "volume": 0.7,
+        "pitch": 0.5,
+        "type": "event"
+      }
+    ]
+  },
+  "nuke_rumble": {
+    "subtitle": "subtitles.gunmod.nuke_rumble",
+    "sounds": [
+      {
+        "name": "minecraft:entity.generic.explode",
+        "volume": 1.0,
+        "pitch": 0.6,
+        "type": "event"
+      }
+    ]
+  },
+  "rocket_fire": {
+    "subtitle": "subtitles.gunmod.rocket_fire",
+    "sounds": [
+      {
+        "name": "minecraft:entity.firework_rocket.launch",
+        "volume": 1.0,
+        "pitch": 0.7,
+        "type": "event"
+      },
+      {
+        "name": "minecraft:entity.generic.explode",
+        "volume": 0.4,
+        "pitch": 1.4,
+        "type": "event"
+      }
+    ]
+  },
+  "headshot_ding": {
+    "subtitle": "subtitles.gunmod.headshot",
+    "sounds": [
+      {
+        "name": "minecraft:block.note_block.pling",
+        "volume": 1.0,
+        "pitch": 2.0,
+        "type": "event"
+      }
+    ]
+  },
+  "black_hole": {
+    "subtitle": "subtitles.gunmod.black_hole",
+    "sounds": [
+      {
+        "name": "minecraft:block.portal.ambient",
+        "volume": 1.0,
+        "pitch": 0.5,
+        "type": "event"
+      },
+      {
+        "name": "minecraft:entity.enderman.teleport",
+        "volume": 0.6,
+        "pitch": 0.4,
+        "type": "event"
+      }
+    ]
+  }
+}

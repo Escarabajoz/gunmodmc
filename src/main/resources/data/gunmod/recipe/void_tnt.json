@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "BBB",
+    "BEB",
+    "BBB"
+  ],
+  "key": {
+    "B": "gunmod:black_hole_ultramassive",
+    "E": "minecraft:end_crystal"
+  },
+  "result": {
+    "id": "gunmod:void_tnt",
+    "count": 1
+  }
+}

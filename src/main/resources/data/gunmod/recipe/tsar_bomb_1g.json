@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "BBB",
+    "BNB",
+    "BBB"
+  ],
+  "key": {
+    "B": "gunmod:tsar_bomb_100m",
+    "N": "minecraft:netherite_block"
+  },
+  "result": {
+    "id": "gunmod:tsar_bomb_1g",
+    "count": 1
+  }
+}

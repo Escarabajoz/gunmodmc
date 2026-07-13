@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "BBB",
+    "BCB",
+    "BBB"
+  ],
+  "key": {
+    "B": "gunmod:tsar_bomb_1g",
+    "C": "minecraft:beacon"
+  },
+  "result": {
+    "id": "gunmod:tsar_bomb_1t",
+    "count": 1
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "BBB",
+    "BCB",
+    "BBB"
+  ],
+  "key": {
+    "B": "gunmod:black_hole_supermassive",
+    "C": "minecraft:beacon"
+  },
+  "result": {
+    "id": "gunmod:black_hole_galactic",
+    "count": 1
+  }
+}
