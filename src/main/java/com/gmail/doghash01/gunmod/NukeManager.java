@@ -96,13 +96,15 @@ public final class NukeManager {
 
         private int fuseLeft;
         private int ring;
-        private int cloudTicks = 120;
+        private int cloudTicks;
 
         Detonation(ServerLevel level, Vec3 center, BombType type) {
             this.level = level;
             this.center = center;
             this.type = type;
             this.fuseLeft = type.fuseTicks();
+            // Bigger bombs leave a longer-lasting mushroom cloud.
+            this.cloudTicks = 100 + type.radius();
         }
 
         /** Advances one tick; returns true when the detonation is completely finished. */

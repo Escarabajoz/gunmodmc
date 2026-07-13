@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "BBB",
+    "BCB",
+    "BBB"
+  ],
+  "key": {
+    "B": "gunmod:tsar_bomb_200t",
+    "C": "minecraft:dragon_head"
+  },
+  "result": {
+    "id": "gunmod:tsar_bomb_400t",
+    "count": 1
+  }
+}

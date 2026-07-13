@@ -26,5 +26,9 @@
   "subtitles.gunmod.nuke_blast": "Explosión nuclear",
   "subtitles.gunmod.nuke_rumble": "La tierra retumba",
   "subtitles.gunmod.rocket_fire": "Lanzamiento de cohete",
-  "subtitles.gunmod.headshot": "¡Tiro a la cabeza!"
+  "subtitles.gunmod.headshot": "¡Tiro a la cabeza!",
+  "item.gunmod.tsar_bomb_100t": "Bomba del Zar VII (100 billones de megatones)",
+  "item.gunmod.tsar_bomb_200t": "Bomba del Zar VIII (200 billones de megatones)",
+  "item.gunmod.tsar_bomb_400t": "Bomba del Zar IX (400 billones de megatones)",
+  "item.gunmod.tsar_bomb_999999t": "Bomba del Zar X (999.999 billones de megatones)"
 }

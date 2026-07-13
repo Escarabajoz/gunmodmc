@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "BBB",
+    "BCB",
+    "BBB"
+  ],
+  "key": {
+    "B": "gunmod:tsar_bomb_100t",
+    "C": "minecraft:enchanted_golden_apple"
+  },
+  "result": {
+    "id": "gunmod:tsar_bomb_200t",
+    "count": 1
+  }
+}

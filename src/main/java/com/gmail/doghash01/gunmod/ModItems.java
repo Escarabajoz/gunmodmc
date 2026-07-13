@@ -64,16 +64,27 @@ public final class ModItems {
             new BombType(130, 200, 2500.0F, 2, 0.95F));
     public static final RegistryObject<Item> TSAR_BOMB_1T = bomb("tsar_bomb_1t",
             new BombType(170, 240, 5000.0F, 3, 1.00F));
+    public static final RegistryObject<Item> TSAR_BOMB_100T = bomb("tsar_bomb_100t",
+            new BombType(190, 260, 10000.0F, 3, 1.00F));
+    public static final RegistryObject<Item> TSAR_BOMB_200T = bomb("tsar_bomb_200t",
+            new BombType(210, 280, 20000.0F, 3, 1.00F));
+    public static final RegistryObject<Item> TSAR_BOMB_400T = bomb("tsar_bomb_400t",
+            new BombType(230, 300, 40000.0F, 3, 1.00F));
+    // The doomsday tier. Radius 256 spans a half-kilometre crater; the shockwave alone runs
+    // for ~3 seconds and the thermal ring for a couple more.
+    public static final RegistryObject<Item> TSAR_BOMB_999999T = bomb("tsar_bomb_999999t",
+            new BombType(256, 400, 99999.0F, 4, 1.00F));
 
     /** Display order for the creative tab. */
     public static final List<RegistryObject<Item>> CREATIVE_ORDER = List.of(
             PISTOL, SMG, RIFLE, SHOTGUN, SNIPER, MINIGUN, ROCKET_LAUNCHER,
             BULLET, SHELL, HEAVY_ROUND, ROCKET,
-            TSAR_BOMB, TSAR_BOMB_100K, TSAR_BOMB_1M, TSAR_BOMB_100M, TSAR_BOMB_1G, TSAR_BOMB_1T);
+            TSAR_BOMB, TSAR_BOMB_100K, TSAR_BOMB_1M, TSAR_BOMB_100M, TSAR_BOMB_1G, TSAR_BOMB_1T,
+            TSAR_BOMB_100T, TSAR_BOMB_200T, TSAR_BOMB_400T, TSAR_BOMB_999999T);
 
     /** Counts for the startup log line. */
     public static final int GUN_COUNT = 7;
-    public static final int BOMB_COUNT = 6;
+    public static final int BOMB_COUNT = 10;
 
     private static RegistryObject<Item> ammo(String name) {
         return ITEMS.register(name, () -> new Item(new Item.Properties().setId(ITEMS.key(name))));

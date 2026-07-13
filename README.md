@@ -41,7 +41,7 @@ Built for the profile shown in the launcher:
 - **Feedback** – muzzle flash + smoke, an `end_rod` tracer along the shot, impact particles,
   a dry-fire *click* when you're out of ammo, and layered gunshot sounds (built from vanilla
   sound events, so the mod ships **no audio files**).
-- **6 Tsar-class bombs** with escalating fictional yields — 50 MT up to **1 trillion megatons** —
+- **10 Tsar-class bombs** with escalating fictional yields — 50 MT up to **999,999 trillion megatons** —
   each with a beeping fuse, a one-time blast that damages every entity in range with distance
   falloff, an expanding ring **shockwave that erases terrain over several seconds** (a custom
   multi-tick sweep — the vanilla explosion engine can't handle these radii), and a lingering
@@ -93,6 +93,14 @@ beeps faster and faster, then: flash, blast, expanding shockwave, mushroom cloud
 | Tsar Bomba IV (100 Million Megatons)   | 100 blocks   | 8 s   | 1,200              | 85%  |
 | Tsar Bomba V (1 Billion Megatons)      | 130 blocks   | 10 s  | 2,500              | 95%  |
 | Tsar Bomba VI (1 Trillion Megatons)    | 170 blocks   | 12 s  | 5,000              | 100% |
+| Tsar Bomba VII (100 Trillion Megatons) | 190 blocks   | 13 s  | 10,000             | 100% |
+| Tsar Bomba VIII (200 Trillion Megatons)| 210 blocks   | 14 s  | 20,000             | 100% |
+| Tsar Bomba IX (400 Trillion Megatons)  | 230 blocks   | 15 s  | 40,000             | 100% |
+| Tsar Bomba X (999,999 Trillion Megatons)| 256 blocks  | 20 s  | 99,999             | 100% |
+
+> ⚠️ The mega tiers (VII–X) carve craters hundreds of blocks wide and will force-load ~1,000
+> chunks while the shockwave runs — expect a few seconds of heavy lifting from the server on
+> Tier X. That's the price of the apocalypse.
 
 *(Yields are narrative tiers — the radii are hand-tuned so worlds stay playable and servers
 stay alive. Entity damage falls off linearly out to 1.5× the blast radius; the heat rating
@@ -121,6 +129,10 @@ Bombs escalate — each tier is **8 of the previous tier around an increasingly 
 - **Tsar Bomba IV** — 8 Tier-III bombs around a nether star
 - **Tsar Bomba V** — 8 Tier-IV bombs around a netherite block
 - **Tsar Bomba VI** — 8 Tier-V bombs around a **beacon**
+- **Tsar Bomba VII** — 8 Tier-VI bombs around a **wither skeleton skull**
+- **Tsar Bomba VIII** — 8 Tier-VII bombs around an **enchanted golden apple**
+- **Tsar Bomba IX** — 8 Tier-VIII bombs around a **dragon head**
+- **Tsar Bomba X** — 8 Tier-IX bombs around the **dragon egg** itself
 
 New weapons: **Minigun** = 4 iron blocks + 4 iron ingots + redstone block core;
 **Rocket Launcher** = iron ingots + iron block + redstone + stick;

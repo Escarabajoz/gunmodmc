@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "BBB",
+    "BCB",
+    "BBB"
+  ],
+  "key": {
+    "B": "gunmod:tsar_bomb_1t",
+    "C": "minecraft:wither_skeleton_skull"
+  },
+  "result": {
+    "id": "gunmod:tsar_bomb_100t",
+    "count": 1
+  }
+}

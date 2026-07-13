@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "BBB",
+    "BCB",
+    "BBB"
+  ],
+  "key": {
+    "B": "gunmod:tsar_bomb_400t",
+    "C": "minecraft:dragon_egg"
+  },
+  "result": {
+    "id": "gunmod:tsar_bomb_999999t",
+    "count": 1
+  }
+}

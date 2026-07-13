@@ -26,5 +26,9 @@
   "subtitles.gunmod.nuke_blast": "Nuclear explosion",
   "subtitles.gunmod.nuke_rumble": "Ground rumbles",
   "subtitles.gunmod.rocket_fire": "Rocket launches",
-  "subtitles.gunmod.headshot": "Headshot!"
+  "subtitles.gunmod.headshot": "Headshot!",
+  "item.gunmod.tsar_bomb_100t": "Tsar Bomba VII (100 Trillion Megatons)",
+  "item.gunmod.tsar_bomb_200t": "Tsar Bomba VIII (200 Trillion Megatons)",
+  "item.gunmod.tsar_bomb_400t": "Tsar Bomba IX (400 Trillion Megatons)",
+  "item.gunmod.tsar_bomb_999999t": "Tsar Bomba X (999,999 Trillion Megatons)"
 }
