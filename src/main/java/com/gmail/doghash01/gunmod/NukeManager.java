@@ -5,6 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.Blocks;
@@ -19,21 +20,24 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Drives Tsar-bomb detonations across server ticks.
+ * Drives Tsar-bomb (and rocket) detonations across server ticks.
  *
  * <p>The vanilla explosion engine computes ray-based blast resistance and cannot survive radii in
- * the hundreds, so detonations here are custom: after a beeping fuse, entities are damaged once
- * with distance falloff, and the terrain is erased by an expanding ring shockwave — a few rings
- * per tick — so even a 130-block-radius crater is spread over seconds instead of freezing the
- * server. A particle mushroom cloud lingers after the wave completes.</p>
+ * the hundreds, so detonations here are custom: after a beeping fuse, entities are damaged and set
+ * ablaze once with distance falloff, and the terrain is erased by an expanding ring shockwave — a
+ * few rings per tick — so even a 170-block-radius crater is spread over seconds instead of
+ * freezing the server. The bomb's {@link BombType#heat() heat} then melts the world: the crater
+ * floor turns to magma and lava near ground zero, and a scorch ring past the crater bakes sand to
+ * glass, clay to terracotta, melts ice and snow, chars trees and starts fires. A particle mushroom
+ * cloud lingers after the wave completes.</p>
  *
  * <p>All state is touched only from the server thread via {@code ServerTickEvent.Post}.</p>
  */
 public final class NukeManager {
 
     private static final Logger LOGGER = LogUtils.getLogger();
-    /** Concurrent-detonation cap; protects the server from bomb spam. */
-    private static final int MAX_ACTIVE = 4;
+    /** Concurrent-detonation cap; protects the server from bomb spam. Rockets share this pool. */
+    private static final int MAX_ACTIVE = 8;
     private static final List<Detonation> ACTIVE = new ArrayList<>();
     private static boolean initialized;
 
@@ -78,7 +82,10 @@ public final class NukeManager {
         }
     }
 
-    /** One armed bomb: fuse countdown -> initial blast -> expanding ring shockwave -> lingering cloud. */
+    /**
+     * One armed bomb: fuse countdown -> initial blast -> expanding ring shockwave (with molten
+     * floor) -> thermal scorch ring -> lingering cloud.
+     */
     private static final class Detonation {
 
         private static final BlockState AIR = Blocks.AIR.defaultBlockState();
@@ -108,9 +115,14 @@ public final class NukeManager {
                 }
                 return false;
             }
-            if (ring <= type.radius()) {
-                for (int i = 0; i < type.ringsPerTick() && ring <= type.radius(); i++) {
-                    destroyRing(ring);
+            int scorchEnd = type.radius() + type.scorchWidth();
+            if (ring <= scorchEnd) {
+                for (int i = 0; i < type.ringsPerTick() && ring <= scorchEnd; i++) {
+                    if (ring <= type.radius()) {
+                        destroyRing(ring);
+                    } else {
+                        scorchRing(ring);
+                    }
                     ring++;
                 }
                 waveEffects(Math.min(ring, type.radius()));
@@ -143,17 +155,27 @@ public final class NukeManager {
             damageEntities();
         }
 
-        /** Hits every entity in 1.5x the blast radius once, with linear distance falloff. */
+        /**
+         * Hits every entity in 1.5x the blast radius once, with linear distance falloff, and sets
+         * them on fire out to 2x the radius — the thermal pulse reaches further than the blast.
+         */
         private void damageEntities() {
-            double reach = type.radius() * 1.5;
-            AABB area = new AABB(center, center).inflate(reach);
+            double blastReach = type.radius() * 1.5;
+            double heatReach = type.radius() * 2.0;
+            AABB area = new AABB(center, center).inflate(heatReach);
             for (Entity entity : level.getEntities((Entity) null, area,
                     e -> e.isAlive() && !e.isSpectator())) {
                 double distance = entity.position().distanceTo(center);
-                if (distance > reach) {
+
+                if (distance <= heatReach && type.heat() > 0.0F) {
+                    float heatFalloff = (float) (1.0 - distance / heatReach);
+                    entity.igniteForSeconds(2.0F + 14.0F * type.heat() * heatFalloff);
+                }
+
+                if (distance > blastReach) {
                     continue;
                 }
-                float falloff = (float) (1.0 - distance / reach);
+                float falloff = (float) (1.0 - distance / blastReach);
                 float damage = Math.max(4.0F, type.maxDamage() * falloff);
                 entity.hurtServer(level, level.damageSources().explosion(null, null), damage);
 
@@ -167,8 +189,9 @@ public final class NukeManager {
 
         /**
          * Erases the vertical spherical slice whose horizontal distance from ground zero lies in
-         * {@code [r, r+1)}. Scanning column-by-column keeps per-ring work proportional to the ring
-         * circumference, and each column clears its full sphere chord in one pass.
+         * {@code [r, r+1)}, then heat-treats the newly exposed crater floor. Scanning
+         * column-by-column keeps per-ring work proportional to the ring circumference, and each
+         * column clears its full sphere chord in one pass.
          */
         private void destroyRing(int r) {
             int radius = type.radius();
@@ -179,6 +202,7 @@ public final class NukeManager {
             long outerSq = (long) (r + 1) * (r + 1);
             int minY = level.getMinY() + 1;
             int maxY = level.getMaxY() - 1;
+            RandomSource random = level.getRandom();
 
             for (int dx = -(r + 1); dx <= r + 1; dx++) {
                 for (int dz = -(r + 1); dz <= r + 1; dz++) {
@@ -204,6 +228,124 @@ public final class NukeManager {
                         // Flag 2: sync to clients; flag 16: skip neighbour shape updates. No drops.
                         level.setBlock(pos, AIR, 2 | 16);
                     }
+                    meltCraterFloor(x, yLo - 1, z, Math.sqrt((double) horizSq), random);
+                }
+            }
+        }
+
+        /** Heat-treats the crater floor block under a cleared column: lava core, magma further out. */
+        private void meltCraterFloor(int x, int floorY, int z, double horizDist, RandomSource random) {
+            float heat = type.heat();
+            if (heat <= 0.0F || floorY <= level.getMinY()) {
+                return;
+            }
+            BlockPos pos = new BlockPos(x, floorY, z);
+            BlockState state = level.getBlockState(pos);
+            if (state.isAir() || isProtected(state)) {
+                return;
+            }
+            if (horizDist <= type.moltenRadius()) {
+                // Molten core: mostly lava with magma edges.
+                if (random.nextFloat() < 0.45F * heat) {
+                    level.setBlock(pos, Blocks.LAVA.defaultBlockState(), 2 | 16);
+                } else if (random.nextFloat() < 0.6F) {
+                    level.setBlock(pos, Blocks.MAGMA_BLOCK.defaultBlockState(), 2 | 16);
+                }
+            } else if (random.nextFloat() < 0.22F * heat) {
+                level.setBlock(pos, Blocks.MAGMA_BLOCK.defaultBlockState(), 2 | 16);
+            } else {
+                meltInPlace(pos, state, random, heat);
+            }
+        }
+
+        /**
+         * Thermal ring past the crater edge: nothing is destroyed, but the exposed surface melts —
+         * sand vitrifies, clay bakes, ice and snow melt, water flashes to steam, trees char, and
+         * fires break out.
+         */
+        private void scorchRing(int r) {
+            int cx = (int) Math.floor(center.x);
+            int cy = (int) Math.floor(center.y);
+            int cz = (int) Math.floor(center.z);
+            long innerSq = (long) r * r;
+            long outerSq = (long) (r + 1) * (r + 1);
+            int radius = type.radius();
+            int minY = Math.max(level.getMinY() + 1, cy - radius);
+            int maxY = Math.min(level.getMaxY() - 1, cy + radius);
+            RandomSource random = level.getRandom();
+            float heat = type.heat();
+            // Heat fades across the scorch ring.
+            float fade = 1.0F - (float) (r - radius) / Math.max(1, type.scorchWidth());
+
+            for (int dx = -(r + 1); dx <= r + 1; dx++) {
+                for (int dz = -(r + 1); dz <= r + 1; dz++) {
+                    long horizSq = (long) dx * dx + (long) dz * dz;
+                    if (horizSq < innerSq || horizSq >= outerSq) {
+                        continue;
+                    }
+                    int x = cx + dx;
+                    int z = cz + dz;
+                    // Find the exposed surface in this column.
+                    for (int y = maxY; y >= minY; y--) {
+                        BlockPos pos = new BlockPos(x, y, z);
+                        BlockState state = level.getBlockState(pos);
+                        if (state.isAir()) {
+                            continue;
+                        }
+                        if (!isProtected(state) && random.nextFloat() < heat * fade) {
+                            meltInPlace(pos, state, random, heat * fade);
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
+        /** Applies a heat transformation to a single exposed block. */
+        private void meltInPlace(BlockPos pos, BlockState state, RandomSource random, float intensity) {
+            BlockState replacement = null;
+            boolean tryFire = false;
+
+            if (state.is(Blocks.SAND) || state.is(Blocks.RED_SAND)) {
+                replacement = Blocks.GLASS.defaultBlockState();
+            } else if (state.is(Blocks.CLAY)) {
+                replacement = Blocks.TERRACOTTA.defaultBlockState();
+            } else if (state.is(Blocks.ICE) || state.is(Blocks.PACKED_ICE) || state.is(Blocks.BLUE_ICE)
+                    || state.is(Blocks.FROSTED_ICE)) {
+                replacement = Blocks.WATER.defaultBlockState();
+            } else if (state.is(Blocks.SNOW) || state.is(Blocks.SNOW_BLOCK) || state.is(Blocks.POWDER_SNOW)) {
+                replacement = AIR;
+            } else if (state.is(Blocks.WATER)) {
+                // Steam flash: shallow surface water evaporates.
+                if (random.nextFloat() < 0.5F * intensity) {
+                    replacement = AIR;
+                }
+            } else if (state.is(Blocks.GRASS_BLOCK) || state.is(Blocks.PODZOL) || state.is(Blocks.MYCELIUM)) {
+                replacement = Blocks.COARSE_DIRT.defaultBlockState();
+                tryFire = true;
+            } else if (state.is(BlockTags.LEAVES)) {
+                replacement = AIR;
+            } else if (state.is(BlockTags.LOGS) || state.is(BlockTags.PLANKS)) {
+                replacement = random.nextFloat() < 0.6F ? Blocks.COAL_BLOCK.defaultBlockState() : AIR;
+                tryFire = true;
+            } else if (state.is(Blocks.STONE) || state.is(Blocks.COBBLESTONE) || state.is(Blocks.ANDESITE)
+                    || state.is(Blocks.DIORITE) || state.is(Blocks.GRANITE) || state.is(Blocks.DEEPSLATE)) {
+                if (random.nextFloat() < 0.25F * intensity) {
+                    replacement = Blocks.MAGMA_BLOCK.defaultBlockState();
+                }
+                tryFire = true;
+            } else {
+                tryFire = true;
+            }
+
+            if (replacement != null) {
+                level.setBlock(pos, replacement, 2 | 16);
+            }
+            // Fires break out on top of heated solid ground.
+            if (tryFire && random.nextFloat() < 0.12F * intensity) {
+                BlockPos above = pos.above();
+                if (above.getY() < level.getMaxY() && level.getBlockState(above).isAir()) {
+                    level.setBlock(above, Blocks.FIRE.defaultBlockState(), 2 | 16);
                 }
             }
         }

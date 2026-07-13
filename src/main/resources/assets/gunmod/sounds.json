@@ -156,5 +156,33 @@
         "type": "event"
       }
     ]
+  },
+  "rocket_fire": {
+    "subtitle": "subtitles.gunmod.rocket_fire",
+    "sounds": [
+      {
+        "name": "minecraft:entity.firework_rocket.launch",
+        "volume": 1.0,
+        "pitch": 0.7,
+        "type": "event"
+      },
+      {
+        "name": "minecraft:entity.generic.explode",
+        "volume": 0.4,
+        "pitch": 1.4,
+        "type": "event"
+      }
+    ]
+  },
+  "headshot_ding": {
+    "subtitle": "subtitles.gunmod.headshot",
+    "sounds": [
+      {
+        "name": "minecraft:block.note_block.pling",
+        "volume": 1.0,
+        "pitch": 2.0,
+        "type": "event"
+      }
+    ]
   }
 }

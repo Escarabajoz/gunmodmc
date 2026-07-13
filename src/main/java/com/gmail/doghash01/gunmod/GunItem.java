@@ -1,6 +1,7 @@
 package com.gmail.doghash01.gunmod;
 
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
@@ -70,6 +71,9 @@ public class GunItem extends Item {
         if (level instanceof ServerLevel server) {
             if (!creative) {
                 ammo.shrink(1);
+                // Live ammo counter on the action bar.
+                player.sendOverlayMessage(Component.translatable(
+                        "message.gunmod.ammo_left", countAmmo(player, ammoItem)));
             }
 
             RandomSource random = player.getRandom();
@@ -117,6 +121,11 @@ public class GunItem extends Item {
 
             DamageSource source = level.damageSources().playerAttack(player);
             target.hurtServer(level, source, damage);
+            if (headshot) {
+                // Satisfying confirmation ding for the shooter.
+                level.playSound(null, player.getX(), player.getEyeY(), player.getZ(),
+                        ModSounds.HEADSHOT_DING.get(), SoundSource.PLAYERS, 0.6F, 1.0F);
+            }
 
             // Kick the target away from the shooter.
             Vec3 knock = dir.scale(type.knockback());
@@ -188,6 +197,18 @@ public class GunItem extends Item {
             }
         }
         return ItemStack.EMPTY;
+    }
+
+    private static int countAmmo(Player player, Item ammoItem) {
+        Inventory inventory = player.getInventory();
+        int total = 0;
+        for (int slot = 0; slot < inventory.getContainerSize(); slot++) {
+            ItemStack stack = inventory.getItem(slot);
+            if (!stack.isEmpty() && stack.is(ammoItem)) {
+                total += stack.getCount();
+            }
+        }
+        return total;
     }
 
     private static void spawnMuzzleFlash(ServerLevel level, Vec3 eye, Vec3 forward, Vec3 right, Vec3 up) {

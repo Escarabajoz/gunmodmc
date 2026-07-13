@@ -10,6 +10,20 @@ package com.gmail.doghash01.gunmod;
  * @param fuseTicks    delay between arming and detonation (20 ticks = 1 second)
  * @param maxDamage    damage dealt at ground zero, falling off linearly to the blast edge
  * @param ringsPerTick how many shockwave rings advance each tick (higher = faster, heavier ticks)
+ * @param heat         thermal intensity 0..1: drives how far the scorch ring extends past the
+ *                     crater, the odds of melting blocks (sand to glass, stone to magma, ice to
+ *                     water, clay to terracotta), lava pooling at ground zero, surface fires,
+ *                     and how long entities burn
  */
-public record BombType(int radius, int fuseTicks, float maxDamage, int ringsPerTick) {
+public record BombType(int radius, int fuseTicks, float maxDamage, int ringsPerTick, float heat) {
+
+    /** Radius of the molten (lava-pooling) core around ground zero. */
+    public int moltenRadius() {
+        return (int) (radius * 0.30F * heat);
+    }
+
+    /** How many blocks past the crater the thermal scorch ring extends. */
+    public int scorchWidth() {
+        return (int) (radius * 0.35F * heat);
+    }
 }

@@ -18,12 +18,17 @@ Built for the profile shown in the launcher:
 
 ## Features
 
-- **5 firearms**, each a distinct feel:
+- **7 weapons**, each a distinct feel, all with **3D voxel models** (vanilla JSON cuboid
+  models, BlockBench-style — rendered in hand, in the GUI and on the ground):
   - **Pistol** – reliable sidearm, low spread.
   - **SMG** – very fast fire rate, higher spread, light damage.
   - **Assault Rifle** – balanced all-rounder, good range and accuracy.
   - **Shotgun** – fires **8 pellets** in a wide cone, brutal up close, strong knockback.
   - **Sniper Rifle** – huge single-shot damage, pin-point accuracy, 96-block range, **2× headshots**.
+  - **Minigun** – fires every single tick; melts targets and your bullet reserves alike.
+  - **Rocket Launcher** – lobs an explosive that blows a hot crater where you aim (64-block range).
+- **Gun feel**: a live **ammo counter** on the action bar after every shot, and a satisfying
+  **headshot ding** when you land one.
 - **Hitscan shooting** – bullets ray-trace instantly from your eyes to the target; no laggy
   projectile entities.
 - **Ammo system** – guns consume ammo from your inventory:
@@ -36,12 +41,19 @@ Built for the profile shown in the launcher:
 - **Feedback** – muzzle flash + smoke, an `end_rod` tracer along the shot, impact particles,
   a dry-fire *click* when you're out of ammo, and layered gunshot sounds (built from vanilla
   sound events, so the mod ships **no audio files**).
-- **5 Tsar-class bombs** with escalating fictional yields — 50 MT up to 1 billion megatons —
+- **6 Tsar-class bombs** with escalating fictional yields — 50 MT up to **1 trillion megatons** —
   each with a beeping fuse, a one-time blast that damages every entity in range with distance
   falloff, an expanding ring **shockwave that erases terrain over several seconds** (a custom
   multi-tick sweep — the vanilla explosion engine can't handle these radii), and a lingering
-  particle **mushroom cloud**. Up to 4 simultaneous detonations; bedrock and other unbreakable
+  particle **mushroom cloud**. Up to 8 simultaneous detonations; bedrock and other unbreakable
   blocks survive.
+- **Thermal (heat) system** — every bomb has a heat rating that melts the world:
+  - the crater floor turns to **magma, with a lava pool at ground zero**;
+  - a **scorch ring** past the crater bakes **sand → glass**, **clay → terracotta**, melts
+    **ice → water** and snow, **evaporates surface water**, turns grass to coarse dirt,
+    **chars trees to coal**, and starts **fires**;
+  - the thermal pulse **sets entities on fire** out to 2× the blast radius (hotter bombs burn
+    longer).
 - A dedicated **Gun Mod** creative tab.
 - English and Spanish (`es_es`, `es_mx`) translations.
 
@@ -53,13 +65,18 @@ the sniper is deliberate.
 
 ### Gun stats
 
-| Gun     | Damage | Range | Pellets | Spread | Fire delay | Headshot | Ammo         |
-| ------- | ------ | ----- | ------- | ------ | ---------- | -------- | ------------ |
-| Pistol  | 5      | 32    | 1       | 1.6°   | 7 ticks    | ×1.5     | Bullet       |
-| SMG     | 3.5    | 28    | 1       | 3.2°   | 3 ticks    | ×1.4     | Bullet       |
-| Rifle   | 6.5    | 48    | 1       | 1.1°   | 5 ticks    | ×1.6     | Bullet       |
-| Shotgun | 3 ×8   | 16    | 8       | 6.0°   | 16 ticks   | ×1.3     | Shell        |
-| Sniper  | 14     | 96    | 1       | 0.25°  | 28 ticks   | ×2.0     | Heavy Round  |
+| Gun             | Damage | Range | Pellets | Spread | Fire delay | Headshot | Ammo         |
+| --------------- | ------ | ----- | ------- | ------ | ---------- | -------- | ------------ |
+| Pistol          | 5      | 32    | 1       | 1.6°   | 7 ticks    | ×1.5     | Bullet       |
+| SMG             | 3.5    | 28    | 1       | 3.2°   | 3 ticks    | ×1.4     | Bullet       |
+| Rifle           | 6.5    | 48    | 1       | 1.1°   | 5 ticks    | ×1.6     | Bullet       |
+| Shotgun         | 3 ×8   | 16    | 8       | 6.0°   | 16 ticks   | ×1.3     | Shell        |
+| Sniper          | 14     | 96    | 1       | 0.25°  | 28 ticks   | ×2.0     | Heavy Round  |
+| Minigun         | 2.5    | 32    | 1       | 4.5°   | 1 tick     | ×1.3     | Bullet       |
+| Rocket Launcher | blast  | 64    | —       | —      | 40 ticks   | —        | Rocket       |
+
+The rocket launcher's rocket detonates a radius-5 hot blast where you aim (max 40 damage at the
+center, fires, small crater).
 
 *(Damage is in half-hearts. 20 ticks = 1 second.)*
 
@@ -68,16 +85,18 @@ the sniper is deliberate.
 Right-click with a bomb to arm it at the block you're aiming at (up to 8 blocks away). The fuse
 beeps faster and faster, then: flash, blast, expanding shockwave, mushroom cloud.
 
-| Bomb                                   | Blast radius | Fuse  | Ground-zero damage |
-| -------------------------------------- | ------------ | ----- | ------------------ |
-| Tsar Bomba (50 Megatons)               | 35 blocks    | 5 s   | 150                |
-| Tsar Bomba II (100,000 Megatons)       | 55 blocks    | 6 s   | 300                |
-| Tsar Bomba III (1 Million Megatons)    | 75 blocks    | 7 s   | 600                |
-| Tsar Bomba IV (100 Million Megatons)   | 100 blocks   | 8 s   | 1,200              |
-| Tsar Bomba V (1 Billion Megatons)      | 130 blocks   | 10 s  | 2,500              |
+| Bomb                                   | Blast radius | Fuse  | Ground-zero damage | Heat |
+| -------------------------------------- | ------------ | ----- | ------------------ | ---- |
+| Tsar Bomba (50 Megatons)               | 35 blocks    | 5 s   | 150                | 40%  |
+| Tsar Bomba II (100,000 Megatons)       | 55 blocks    | 6 s   | 300                | 55%  |
+| Tsar Bomba III (1 Million Megatons)    | 75 blocks    | 7 s   | 600                | 70%  |
+| Tsar Bomba IV (100 Million Megatons)   | 100 blocks   | 8 s   | 1,200              | 85%  |
+| Tsar Bomba V (1 Billion Megatons)      | 130 blocks   | 10 s  | 2,500              | 95%  |
+| Tsar Bomba VI (1 Trillion Megatons)    | 170 blocks   | 12 s  | 5,000              | 100% |
 
 *(Yields are narrative tiers — the radii are hand-tuned so worlds stay playable and servers
-stay alive. Entity damage falls off linearly out to 1.5× the blast radius.)*
+stay alive. Entity damage falls off linearly out to 1.5× the blast radius; the heat rating
+scales the molten core, the scorch-ring width, fire chances and how long entities burn.)*
 
 ### Crafting
 
@@ -101,6 +120,11 @@ Bombs escalate — each tier is **8 of the previous tier around an increasingly 
 - **Tsar Bomba III** — 8 Tier-II bombs around a netherite ingot
 - **Tsar Bomba IV** — 8 Tier-III bombs around a nether star
 - **Tsar Bomba V** — 8 Tier-IV bombs around a netherite block
+- **Tsar Bomba VI** — 8 Tier-V bombs around a **beacon**
+
+New weapons: **Minigun** = 4 iron blocks + 4 iron ingots + redstone block core;
+**Rocket Launcher** = iron ingots + iron block + redstone + stick;
+**Rocket** ×2 = TNT + gunpowder + iron ingot (shapeless).
 
 ---
 
@@ -133,14 +157,15 @@ To try it in a dev client:
 ```
 build.gradle, settings.gradle, gradle.properties   ForgeGradle 7 build (all versions in gradle.properties)
 src/main/java/com/gmail/doghash01/gunmod/
-  GunMod.java        @Mod entry point, creative tab, registration
-  ModItems.java      item registry (3 ammo + 5 guns + 5 bombs)
-  ModSounds.java     sound-event registry
-  GunType.java       per-gun stat record
-  GunItem.java       hitscan firing logic (raytrace, damage, particles, cooldown)
-  BombType.java      per-bomb stat record
-  NukeBombItem.java  bomb arming (aim, fuse start, consume)
-  NukeManager.java   server-tick detonation driver (fuse, blast, ring shockwave, cloud)
+  GunMod.java             @Mod entry point, creative tab, registration
+  ModItems.java           item registry (4 ammo + 7 weapons + 6 bombs)
+  ModSounds.java          sound-event registry
+  GunType.java            per-gun stat record
+  GunItem.java            hitscan firing logic (raytrace, damage, particles, ammo counter)
+  RocketLauncherItem.java aims and fires explosive rockets
+  BombType.java           per-bomb stat record (radius, fuse, damage, heat)
+  NukeBombItem.java       bomb arming (aim, fuse start, consume)
+  NukeManager.java        server-tick detonation driver (fuse, blast, shockwave, melt, cloud)
 src/main/resources/
   META-INF/mods.toml                 mod metadata
   assets/gunmod/items/*.json         client item model definitions (1.21.4+ system)
