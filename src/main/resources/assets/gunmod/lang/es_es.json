@@ -80,5 +80,6 @@
   "message.gunmod.bomb_planted": "Bomba plantada (%s armadas)",
   "message.gunmod.too_many_planted": "¡Demasiadas bombas plantadas!",
   "message.gunmod.detonated": "¡%s bomba(s) detonada(s)!",
-  "message.gunmod.no_planted": "No hay bombas plantadas"
+  "message.gunmod.no_planted": "No hay bombas plantadas",
+  "item.gunmod.void_tnt": "TNT del Vacío / TNT Nulo (radio 1000)"
 }

@@ -97,6 +97,14 @@ public final class ModItems {
     public static final RegistryObject<Item> BLACK_HOLE_ULTRAMASSIVE = bomb("black_hole_ultramassive",
             BombType.blackHole(250, 240, 1000000.0F));
 
+    /**
+     * Void TNT / Null TNT: erases a radius-1000 disc of FULL world columns — bedrock included —
+     * leaving a genuine hole into the void. Budget-swept (~1M block writes per tick), so expect
+     * multi-second ticks for many minutes. Localhost/singleplayer material; you were warned.
+     */
+    public static final RegistryObject<Item> VOID_TNT = bomb("void_tnt",
+            BombType.voidTnt(1000, 200, 1000000.0F));
+
     /** The remote detonator: triggers every bomb planted with sneak + right-click. */
     public static final RegistryObject<Item> DETONATOR = ITEMS.register("detonator",
             () -> new DetonatorItem(new Item.Properties().setId(ITEMS.key("detonator")).stacksTo(1)));
@@ -106,7 +114,7 @@ public final class ModItems {
 
     /** Counts for the startup log line. */
     public static final int GUN_COUNT = 7;
-    public static final int BOMB_COUNT = 10 + 40 + 4;
+    public static final int BOMB_COUNT = 10 + 40 + 4 + 1;
 
     private static List<RegistryObject<Item>> registerMkBombs() {
         List<RegistryObject<Item>> list = new ArrayList<>();
@@ -131,6 +139,7 @@ public final class ModItems {
         order.add(BLACK_HOLE_SUPERMASSIVE);
         order.add(BLACK_HOLE_GALACTIC);
         order.add(BLACK_HOLE_ULTRAMASSIVE);
+        order.add(VOID_TNT);
         return List.copyOf(order);
     }
 

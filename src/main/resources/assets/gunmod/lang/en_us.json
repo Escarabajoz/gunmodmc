@@ -80,5 +80,6 @@
   "message.gunmod.bomb_planted": "Bomb planted (%s armed)",
   "message.gunmod.too_many_planted": "Too many planted bombs!",
   "message.gunmod.detonated": "%s bomb(s) detonated!",
-  "message.gunmod.no_planted": "No planted bombs"
+  "message.gunmod.no_planted": "No planted bombs",
+  "item.gunmod.void_tnt": "Void TNT / Null TNT (radius 1000)"
 }

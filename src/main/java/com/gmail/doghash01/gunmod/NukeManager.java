@@ -238,10 +238,20 @@ public final class NukeManager {
         private final Vec3 center;
         private final BombType type;
 
+        /**
+         * Column budget per tick for the VOID sweep. Each column is a full world-height clear
+         * (~384 blocks), so 2500 columns is roughly a million block writes per tick — expect
+         * multi-second ticks on a radius-1000 void. Singleplayer/localhost material.
+         */
+        private static final int VOID_COLUMNS_PER_TICK = 2500;
+
         private int fuseLeft;
         private int ring;
         private int cloudTicks;
         private int vortexTick;
+        // Resumable cursor for the budget-driven VOID sweep.
+        private int curDx = -1;
+        private int curDz = -1;
 
         Detonation(ServerLevel level, Vec3 center, BombType type) {
             this.level = level;
@@ -249,8 +259,8 @@ public final class NukeManager {
             this.type = type;
             this.fuseLeft = type.fuseTicks();
             // Nukes: bigger bombs leave a longer-lasting mushroom cloud.
-            // Black holes: a short collapse phase after everything is absorbed.
-            this.cloudTicks = type.style() == BombType.Style.BLACK_HOLE ? 60 : 100 + type.radius();
+            // Black holes and voids: a short collapse phase after everything is consumed.
+            this.cloudTicks = type.style() == BombType.Style.NUKE ? 100 + type.radius() : 60;
         }
 
         /** Advances one tick; returns true when the detonation is completely finished. */
@@ -265,6 +275,9 @@ public final class NukeManager {
             }
             if (type.style() == BombType.Style.BLACK_HOLE) {
                 return tickBlackHole();
+            }
+            if (type.style() == BombType.Style.VOID) {
+                return tickVoid();
             }
             int scorchEnd = type.radius() + type.scorchWidth();
             if (ring <= scorchEnd) {
@@ -316,6 +329,113 @@ public final class NukeManager {
             return true;
         }
 
+        /**
+         * Void phase: an ever-widening disc of full world columns — bedrock included — is
+         * erased down to the void. The sweep is budget-driven so each tick does a bounded
+         * amount of work no matter how huge the ring circumference gets.
+         */
+        private boolean tickVoid() {
+            vortexTick++;
+            if (vortexTick % 20 == 0) {
+                voidDamageEntities();
+            }
+            int budget = VOID_COLUMNS_PER_TICK;
+            while (budget > 0 && ring <= type.radius()) {
+                budget -= sweepVoidColumns(budget);
+                if (curDx > ring + 1) {
+                    ring++;
+                    curDx = -(ring + 1);
+                    curDz = -(ring + 1);
+                }
+            }
+            voidEffects();
+            if (ring <= type.radius()) {
+                return false;
+            }
+            if (cloudTicks-- > 0) {
+                return false;
+            }
+            level.playSound(null, center.x, center.y, center.z,
+                    ModSounds.NUKE_RUMBLE.get(), SoundSource.BLOCKS, 8.0F, 0.4F);
+            level.sendParticles(ColorParticleOption.create(ParticleTypes.FLASH, -1),
+                    center.x, center.y, center.z, 2, 0.5, 0.5, 0.5, 0.0);
+            return true;
+        }
+
+        /**
+         * Deletes up to {@code budget} full columns of the current ring band, resuming from the
+         * stored cursor. Returns the number of band columns actually processed. Unlike nukes and
+         * black holes, nothing is protected — bedrock goes too.
+         */
+        private int sweepVoidColumns(int budget) {
+            int processed = 0;
+            long innerSq = (long) ring * ring;
+            long outerSq = (long) (ring + 1) * (ring + 1);
+            int cx = (int) Math.floor(center.x);
+            int cz = (int) Math.floor(center.z);
+            int minY = level.getMinY();
+            int maxY = level.getMaxY() - 1;
+
+            while (processed < budget) {
+                if (curDz > ring + 1) {
+                    curDz = -(ring + 1);
+                    curDx++;
+                }
+                if (curDx > ring + 1) {
+                    return processed; // ring finished; caller advances the ring
+                }
+                long horizSq = (long) curDx * curDx + (long) curDz * curDz;
+                if (horizSq >= innerSq && horizSq < outerSq) {
+                    int x = cx + curDx;
+                    int z = cz + curDz;
+                    for (int y = minY; y <= maxY; y++) {
+                        BlockPos pos = new BlockPos(x, y, z);
+                        if (!level.getBlockState(pos).isAir()) {
+                            level.setBlock(pos, AIR, 2 | 16);
+                        }
+                    }
+                    processed++;
+                }
+                curDz++;
+            }
+            return processed;
+        }
+
+        /** Everything above (or falling into) the consumed disc takes heavy damage every second. */
+        private void voidDamageEntities() {
+            double reach = Math.min(ring, type.radius());
+            AABB area = new AABB(center, center).inflate(reach, 400.0, reach);
+            for (Entity entity : level.getEntities((Entity) null, area,
+                    e -> e.isAlive() && !e.isSpectator())) {
+                double dx = entity.getX() - center.x;
+                double dz = entity.getZ() - center.z;
+                if (dx * dx + dz * dz <= reach * reach) {
+                    entity.hurtServer(level, level.damageSources().explosion(null, null),
+                            type.maxDamage() / 100.0F);
+                }
+            }
+        }
+
+        /** Sparse dark shimmer along the consumption edge. */
+        private void voidEffects() {
+            RandomSource random = level.getRandom();
+            double edge = Math.min(ring, type.radius());
+            for (int i = 0; i < 10; i++) {
+                double angle = random.nextDouble() * Math.PI * 2;
+                level.sendParticles(ParticleTypes.SQUID_INK,
+                        center.x + Math.cos(angle) * edge,
+                        center.y + random.nextDouble() * 8.0,
+                        center.z + Math.sin(angle) * edge,
+                        3, 1.5, 1.5, 1.5, 0.02);
+            }
+            level.sendParticles(ParticleTypes.REVERSE_PORTAL, center.x, center.y + 2.0, center.z,
+                    10, 4.0, 4.0, 4.0, 0.05);
+            if (vortexTick % 60 == 1) {
+                level.playSound(null, center.x, center.y, center.z,
+                        ModSounds.BLACK_HOLE.get(), SoundSource.BLOCKS, 8.0F, 0.35F);
+            }
+        }
+
         /** Drags everything toward the singularity; whatever reaches the core is crushed. */
         private void pullEntities() {
             double pull = type.radius() * 2.5;
@@ -363,7 +483,7 @@ public final class NukeManager {
         }
 
         private void fuseEffects() {
-            if (type.style() == BombType.Style.BLACK_HOLE) {
+            if (type.style() != BombType.Style.NUKE) {
                 level.sendParticles(ParticleTypes.PORTAL, center.x, center.y + 0.5, center.z,
                         6, 0.3, 0.3, 0.3, 0.05);
             } else {
@@ -379,8 +499,8 @@ public final class NukeManager {
         }
 
         private void detonate() {
-            if (type.style() == BombType.Style.BLACK_HOLE) {
-                // Collapse inward: dark burst, no blast wave, no fire.
+            if (type.style() != BombType.Style.NUKE) {
+                // Black holes and voids collapse inward: dark burst, no blast wave, no fire.
                 level.playSound(null, center.x, center.y, center.z,
                         ModSounds.BLACK_HOLE.get(), SoundSource.BLOCKS, 10.0F, 0.4F);
                 level.sendParticles(ParticleTypes.SQUID_INK, center.x, center.y + 1, center.z,

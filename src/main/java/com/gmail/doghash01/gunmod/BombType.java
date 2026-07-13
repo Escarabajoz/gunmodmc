@@ -22,7 +22,9 @@ public record BombType(int radius, int fuseTicks, float maxDamage, int ringsPerT
 
     public enum Style {
         NUKE,
-        BLACK_HOLE
+        BLACK_HOLE,
+        /** Deletes full world columns — bedrock included — leaving a true hole to the void. */
+        VOID
     }
 
     public static BombType nuke(int radius, int fuseTicks, float maxDamage, int ringsPerTick, float heat) {
@@ -32,6 +34,11 @@ public record BombType(int radius, int fuseTicks, float maxDamage, int ringsPerT
     public static BombType blackHole(int radius, int fuseTicks, float maxDamage) {
         // Black holes have no heat: they absorb rather than burn, one ring every other tick.
         return new BombType(radius, fuseTicks, maxDamage, 1, 0.0F, Style.BLACK_HOLE);
+    }
+
+    public static BombType voidTnt(int radius, int fuseTicks, float maxDamage) {
+        // The sweep is budget-driven (columns per tick), so ringsPerTick is unused here.
+        return new BombType(radius, fuseTicks, maxDamage, 1, 0.0F, Style.VOID);
     }
 
     /** Radius of the molten (lava-pooling) core around ground zero. */

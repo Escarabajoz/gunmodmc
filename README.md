@@ -122,6 +122,14 @@ blocks is the practical in-game ceiling.* The base bomb is crafted from obsidian
 and a nether star; each larger size is 8 of the previous around a nether star, beacon, and
 heavy core respectively.
 
+**Void TNT / Null TNT (radius 1000)** — the "why not?" bomb. It doesn't crater; it **deletes a
+1000-block-radius disc of FULL world columns, bedrock included**, leaving a genuine hole into
+the void. The sweep is budget-driven (~1 million block writes per tick) so the game keeps
+ticking, but expect multi-second ticks for **many minutes** and thousands of chunks
+force-generated along the way. This is strictly singleplayer/localhost material — on a shared
+server it *will* ruin everyone's day, which is presumably the point. Crafted from 8
+Ultramassive Black Holes around an end crystal.
+
 **Radioactive fallout** — hot nukes (heat ≥ 50%) leave a lingering radiation zone over the
 crater for minutes (2 min + 10 ticks per radius block): drifting ash, and every living thing
 inside is **poisoned** — or **withered**, for bombs at heat ≥ 90%. Wait it out or keep your
